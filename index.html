@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="hide.png">
+
+  <title>sosush</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --neon-green: #0dff00;
+      --bg-color: #000;
+    }
+    body {
+      background-color: var(--bg-color);
+      color: var(--neon-green);
+      font-family: 'Courier New', Courier, monospace;
+      scrollbar-width: thin;
+      scrollbar-color: var(--neon-green) var(--bg-color);
+    }
+    body::-webkit-scrollbar { width: 8px; }
+    body::-webkit-scrollbar-track { background: var(--bg-color); }
+    body::-webkit-scrollbar-thumb {
+      background-color: var(--neon-green);
+      border-radius: 4px;
+      border: 2px solid var(--bg-color);
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+    .cursor-blink {
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes unlock-shackle {
+      50% {
+        transform: translateY(-6px);
+      }
+      100% {
+        transform: translateY(-6px) rotate(-15deg);
+      }
+    }
+    .unlock-animation {
+      transform-origin: 7px 11px; /* Pivot from the left base of the shackle */
+      animation: unlock-shackle 0.5s forwards ease-in-out;
+    }
+
+    @keyframes hacker-glitch-main {
+      0% { filter: none; text-shadow: none; }
+      20% { text-shadow: 2px 2px 0 rgba(13, 255, 0, 0.5), -2px -2px 0 rgba(255,255,255,0.5); }
+      30% { text-shadow: none; }
+      60% { text-shadow: -2px 2px 0 rgba(13, 255, 0, 0.5), 2px -2px 0 rgba(255,255,255,0.5); }
+      70% {
+        filter: blur(0.5px) hue-rotate(90deg);
+        text-shadow: none;
+      }
+      90% { text-shadow: 2px -2px 0 rgba(13, 255, 0, 0.5), -2px 2px 0 rgba(255,255,255,0.5); }
+      100% { filter: none; text-shadow: none; }
+    }
+    
+    .glitch-active {
+      animation: hacker-glitch-main 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+      overflow: hidden;
+    }
+    
+    .glitch-active::before,
+    .glitch-active::after {
+      content: '';
+      position: absolute;
+      background: white;
+      box-shadow: 0 0 5px white, 0 0 10px white;
+      z-index: 100;
+      pointer-events: none;
+      width: 50%;
+      height: 2px;
+      opacity: 0;
+    }
+    
+    .glitch-active::before {
+      left: 0;
+      animation: glitch-line-left 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+    }
+    
+    .glitch-active::after {
+      right: 0;
+      animation: glitch-line-right 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+    }
+
+    @keyframes glitch-line-left {
+      0% { transform: scaleX(0); top: 10%; opacity: 0; transform-origin: left; }
+      10% { transform: scaleX(1); opacity: 1; }
+      20% { transform: scaleX(0); transform-origin: left; }
+      40% { transform: scaleX(0); top: 60%; opacity: 0; transform-origin: left; }
+      50% { transform: scaleX(1); opacity: 1; }
+      60% { transform: scaleX(0); transform-origin: left; }
+      80% { transform: scaleX(0); top: 45%; opacity: 0; transform-origin: left; }
+      90% { transform: scaleX(1); opacity: 1; }
+      100% { transform: scaleX(0); opacity: 0; }
+    }
+    
+    @keyframes glitch-line-right {
+      0% { transform: scaleX(0); top: 90%; opacity: 0; transform-origin: right; }
+      5% { transform: scaleX(1); opacity: 1; }
+      15% { transform: scaleX(0); transform-origin: right; }
+      30% { transform: scaleX(0); top: 20%; opacity: 0; transform-origin: right; }
+      40% { transform: scaleX(1); opacity: 1; }
+      50% { transform: scaleX(0); transform-origin: right; }
+      70% { transform: scaleX(0); top: 75%; opacity: 0; transform-origin: right; }
+      80% { transform: scaleX(1); opacity: 1; }
+      90% { transform: scaleX(0); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="importmap">
+  {
+    "imports": {
+      "react": "https://aistudiocdn.com/react@^19.2.0",
+      "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+      "react/": "https://aistudiocdn.com/react@^19.2.0/",
+      "@google/genai": "https://aistudiocdn.com/@google/genai@^1.26.0"
+    }
+  }
+  </script>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
