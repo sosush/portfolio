@@ -1244,8 +1244,8 @@ export default function App() {
   ];
 
   const certificates = [
-    { title: "Research Internship", issuer: "VIT Chennai (SRIP 2025)", link: "public/certificates/reserach-internship.pdf" },
-    { title: "Web Developer at Startup", issuer: "Hackfinity", link: "public/certificates/web_developer_hackfinity.pdf" }
+    { title: "Research Internship", issuer: "VIT Chennai (SRIP 2025)", link: "/certificates/reserach-internship.pdf" },
+    { title: "Web Developer at Startup", issuer: "Hackfinity", link: "/certificates/web_developer_hackfinity.pdf" }
   ];
 
   return (
