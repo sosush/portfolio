@@ -1084,8 +1084,7 @@ const ProjectDetail: React.FC<{ project: any; onClose: () => void }> = ({ projec
                     <Heart size={24} className="text-gray-400" />
                   </div>
                   <p className="text-sm italic">
-                    This project is a continuous learning journey. It represents my commitment to understanding complex systems 
-                    and translating that understanding into functional, human-centric software.
+                    These projects are being continuously improved. If you have any suggestions for the same, please feel free to reach out.
                   </p>
                 </div>
               </div>
