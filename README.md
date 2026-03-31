@@ -1,4 +1,7 @@
-<h1 align="center">✨ Welcome to my Designer Gallery</h1>
+<h1 align="center">✨ Welcome to my Designer World</h1>
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/5e4a886a-88e5-4175-b0db-adf0762e3047" alt="Portfolio Preview" width="2000" style="border-radius: 10px;">
+</p>
 
 <p align="center">
   Building smart systems and "vibecoding" aesthetic digital experiences.
@@ -6,9 +9,6 @@
   <a href="https://sohinibanerjee.vercel.app"><strong>Explore the live site »</strong></a>
 </p>
 
-<p align="center">
-  <img width="1470" height="834" alt="Screenshot 2026-03-31 at 2 47 41 PM" src="https://github.com/user-attachments/assets/79a61e0d-eb5f-4af0-9dba-e80672c64572" />
-</p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" />
