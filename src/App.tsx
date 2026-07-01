@@ -18,7 +18,8 @@ import {
   Globe,
   Shield,
   BookOpen,
-  Layout
+  Layout,
+  Briefcase
 } from 'lucide-react';
 
 // Custom Brand Icons as Lucide removed them in recent versions
@@ -97,11 +98,11 @@ const TypingText: React.FC<{ texts: string[] }> = ({ texts }) => {
 const Section: React.FC<{ children: React.ReactNode; id?: string; className?: string }> = ({ children, id, className = "" }) => (
   <motion.section
     id={id}
-    initial={{ opacity: 0, y: 100 }}
+    initial={{ opacity: 0, y: 60 }}
     whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: false, margin: "-100px" }}
-    transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-    className={`min-h-screen flex flex-col justify-center py-20 px-6 md:px-20 ${className}`}
+    viewport={{ once: true, margin: "-80px" }}
+    transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+    className={`min-h-screen flex flex-col justify-center py-24 px-6 md:px-24 lg:px-32 max-w-screen-xl mx-auto w-full ${className}`}
   >
     {children}
   </motion.section>
@@ -499,7 +500,7 @@ const Scene = ({ type, color }: { type: string; color: string }) => {
     }
   });
 
-  if (type === 'Spark') {
+  if (type === 'Spark' || type === 'Circuit Atlas (Ongoing)' || type === 'Circuit Atlas') {
     return (
       <group ref={meshRef}>
         <Stars radius={5} depth={2} count={200} factor={2} saturation={0} fade speed={1} />
@@ -537,7 +538,7 @@ const Scene = ({ type, color }: { type: string; color: string }) => {
     );
   }
 
-  if (type === 'Orbital') {
+  if (type === 'QuantLedger') {
     return (
       <group ref={meshRef}>
         <mesh>
@@ -585,11 +586,11 @@ const Scene = ({ type, color }: { type: string; color: string }) => {
     );
   }
 
-  if (type === 'Prism Protocol') {
+  if (type === 'Prism' || type === 'Prism Protocol') {
     return <PrismProtocolVisual color={color} />;
   }
 
-  if (type === 'Intrusion Detection System') {
+  if (type === 'NetSentinel' || type === 'Intrusion Detection System') {
     return (
       <group ref={meshRef}>
         <Float speed={2} rotationIntensity={1} floatIntensity={1}>
@@ -607,15 +608,15 @@ const Scene = ({ type, color }: { type: string; color: string }) => {
     );
   }
 
-  if (type === 'LearnBuddy') {
+  if (type === 'DISENT-KWS' || type === 'LearnBuddy') {
     return <LearnBuddyVisual color={color} />;
   }
 
-  if (type === 'Dynamic Adaptation in Cybersecurity') {
+  if (type === 'REFLEX' || type === 'Dynamic Adaptation in Cybersecurity') {
     return <CybersecurityVisual color={color} />;
   }
 
-  if (type === "Finding the 'Truth' in Network Traffic") {
+  if (type === 'PI-IDS' || type === 'PI-IDS (Protocol-Invariant Intrusion Detection)' || type === "Finding the 'Truth' in Network Traffic") {
     return <NetworkTruthVisual color={color} />;
   }
 
@@ -631,28 +632,32 @@ const ProjectCard: React.FC<{
   onKnowMore: () => void;
 }> = ({ title, desc, tags, color, type, onKnowMore }) => (
   <motion.div
-    whileHover={{ y: -10 }}
-    className="group relative bg-[#151518] border border-[#ffffff11] p-8 rounded-3xl overflow-hidden cursor-pointer"
+    whileHover={{ y: -6, scale: 1.01 }}
+    transition={{ duration: 0.25, ease: 'easeOut' }}
+    className="group relative bg-white/[0.03] backdrop-blur-sm border border-white/[0.08] hover:border-white/[0.16] p-6 rounded-2xl overflow-hidden cursor-pointer transition-colors duration-300"
     onClick={onKnowMore}
   >
+    {/* Subtle accent glow on hover */}
     <div 
-      className="absolute top-0 right-0 w-32 h-32 blur-3xl opacity-20 group-hover:opacity-40 transition-opacity"
+      className="absolute -top-12 -right-12 w-40 h-40 blur-[60px] opacity-0 group-hover:opacity-20 transition-opacity duration-500 rounded-full"
       style={{ backgroundColor: color }}
     />
-    <div className="aspect-video mb-6 rounded-2xl overflow-hidden bg-[#0a0a0c] border border-[#ffffff05]">
+    {/* 3D Canvas Preview */}
+    <div className="aspect-video mb-5 rounded-xl overflow-hidden bg-[#080809] border border-white/[0.05]">
       <ProjectVisual type={title} color={color} />
     </div>
-    <div className="flex items-center gap-3 mb-4">
-      <span className="text-[8px] font-black uppercase tracking-[0.3em] px-2 py-1 rounded bg-[#ffffff05] text-gray-400 border border-[#ffffff11]">
-        {type === 'personal' ? 'Personal' : type === 'team' ? 'Team' : 'Research'} Project
+    {/* Type Badge */}
+    <div className="flex items-center gap-2 mb-3">
+      <span className="text-[9px] font-semibold uppercase tracking-[0.25em] px-2 py-0.5 rounded-md bg-white/[0.05] text-gray-500">
+        {type === 'personal' ? 'Personal' : type === 'team' ? 'Team' : 'Research'}
       </span>
-      <div className="w-1 h-1 rounded-full" style={{ backgroundColor: color }} />
+      <div className="w-1 h-1 rounded-full opacity-60" style={{ backgroundColor: color }} />
     </div>
-    <h3 className="text-2xl font-bold mb-4 font-display" style={{ color }}>{title}</h3>
-    <p className="text-gray-400 mb-6 leading-relaxed line-clamp-2">{desc}</p>
-    <div className="flex flex-wrap gap-2 mb-8">
-      {tags.map(tag => (
-        <span key={tag} className="text-[10px] uppercase tracking-widest font-bold px-3 py-1 rounded-full bg-[#ffffff05] border border-[#ffffff11]">
+    <h3 className="text-xl font-bold mb-2 font-display text-white group-hover:text-[#f1f1f1] transition-colors" style={{ color }}>{title}</h3>
+    <p className="text-gray-500 mb-5 leading-relaxed text-sm line-clamp-2">{desc}</p>
+    <div className="flex flex-wrap gap-1.5 mb-6">
+      {tags.slice(0, 4).map(tag => (
+        <span key={tag} className="text-[9px] tracking-wide font-medium px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.07] text-gray-500">
           {tag}
         </span>
       ))}
@@ -662,9 +667,9 @@ const ProjectCard: React.FC<{
         e.stopPropagation();
         onKnowMore();
       }}
-      className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white hover:text-[#ff71ce] transition-colors group/btn"
+      className="flex items-center gap-2 text-xs font-semibold text-gray-400 hover:text-white transition-colors group/btn"
     >
-      Know More <ArrowRight size={16} className="group-hover/btn:translate-x-1 transition-transform" />
+      View details <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
     </button>
   </motion.div>
 );
@@ -944,184 +949,251 @@ const ProjectDetail: React.FC<{ project: any; onClose: () => void }> = ({ projec
 
   return (
     <motion.div 
-      initial={{ x: '100%' }}
-      animate={{ x: 0 }}
-      exit={{ x: '100%' }}
-      transition={{ type: "spring", damping: 25, stiffness: 120 }}
-      className="fixed inset-0 z-[200] bg-[#0a0a0c] overflow-y-auto"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.25 }}
+      className="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-8"
+      onClick={onClose}
     >
-      <GeometricDecoration color={project.color} />
-      
-      {/* Random Background Visuals */}
-      <div className="fixed inset-0 pointer-events-none opacity-20">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <motion.div
-            key={i}
-            animate={{ 
-              x: [Math.random() * 100, Math.random() * 100],
-              y: [Math.random() * 100, Math.random() * 100],
-              rotate: [0, 360]
-            }}
-            transition={{ duration: 20 + i * 5, repeat: Infinity, ease: "linear" }}
-            className="absolute w-64 h-64 blur-[120px] rounded-full"
-            style={{ 
-              backgroundColor: project.color,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`
-            }}
-          />
-        ))}
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/75 backdrop-blur-md" />
+
+      {/* Soft accent blobs */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-[120px] opacity-10" style={{ backgroundColor: project.color }} />
+        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 rounded-full blur-[100px] opacity-8" style={{ backgroundColor: project.color }} />
       </div>
 
-      <div className="min-h-screen p-6 md:p-20 relative z-10">
+      {/* Modal card */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.96, y: 12 }}
+        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+        className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-[#0e0e10] border border-white/10 rounded-3xl shadow-2xl"
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Close button */}
         <button 
           onClick={onClose}
-          className="fixed top-10 right-10 z-[210] p-4 rounded-full bg-[#151518] border border-[#ffffff11] hover:bg-[#ff71ce] hover:text-black transition-all group"
+          className="absolute top-5 right-5 z-10 p-2.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-[#ff71ce]/40 transition-all group"
         >
-          <X size={24} className="group-hover:rotate-90 transition-transform" />
+          <X size={18} className="text-gray-400 group-hover:text-white group-hover:rotate-90 transition-all" />
         </button>
-        
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            <div className="flex items-center gap-4 mb-6">
-              <span className="text-xs font-black uppercase tracking-[0.4em] px-4 py-1.5 rounded-full bg-[#ffffff05] text-gray-400 border border-[#ffffff11]">
-                {project.type === 'personal' ? 'Personal Study' : project.type === 'team' ? 'Collaborative Project' : 'Ongoing Research'}
-              </span>
-              <div className="h-[1px] flex-grow bg-gradient-to-r from-[#ffffff11] to-transparent" />
-            </div>
-            <h2 className="text-6xl md:text-9xl font-black font-display mb-8 tracking-tighter leading-none" style={{ color: project.color }}>
+
+        {/* Header: 3D canvas + title */}
+        <div className="aspect-video w-full overflow-hidden rounded-t-3xl bg-[#080809] relative">
+          <ProjectVisual type={project.title} color={project.color} />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0e0e10] via-transparent to-transparent" />
+          <div className="absolute bottom-0 left-0 p-6">
+            <span className="text-[9px] font-semibold uppercase tracking-widest px-2.5 py-1 rounded-md bg-white/10 backdrop-blur-sm text-gray-300 mb-3 inline-block">
+              {project.type === 'personal' ? 'Personal Project' : project.type === 'team' ? 'Team Project' : 'Research'}
+            </span>
+            <h2 className="text-3xl md:text-5xl font-black font-display tracking-tight leading-tight" style={{ color: project.color }}>
               {project.title}
             </h2>
+          </div>
+        </div>
 
-            {/* Tech Stack and Links - Moved above visual */}
-            <div className="mb-12 p-8 rounded-[2.5rem] bg-[#151518] border border-[#ffffff11] flex flex-col md:flex-row gap-8 items-start md:items-center justify-between">
-              <div className="flex-1">
-                <h4 className="text-white font-bold mb-4 uppercase tracking-widest text-[10px] opacity-50">Core Stack</h4>
-                <div className="flex flex-wrap gap-2">
-                  {project.tags.map((tag: string) => (
-                    <span key={tag} className="px-3 py-1 rounded-lg bg-[#ffffff05] text-[10px] text-gray-500 border border-[#ffffff05] font-bold uppercase tracking-tighter">{tag}</span>
+        <div className="p-6 md:p-10 space-y-8">
+          {/* Stack + Links row */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/[0.06]">
+            <div>
+              <p className="text-[9px] uppercase tracking-widest text-gray-600 font-semibold mb-2">Stack</p>
+              <div className="flex flex-wrap gap-1.5">
+                {project.tags.map((tag: string) => (
+                  <span key={tag} className="px-2.5 py-0.5 rounded-md bg-white/[0.05] text-[9px] text-gray-400 border border-white/[0.07] font-medium tracking-wide uppercase">{tag}</span>
+                ))}
+              </div>
+            </div>
+            <div className="flex gap-3 flex-shrink-0">
+              {project.link && project.link !== '#' && (
+                <a href={project.link} target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white text-black text-xs font-bold hover:opacity-90 transition-opacity">
+                  <GithubIcon size={14} /> GitHub
+                </a>
+              )}
+              {project.website && (
+                <a href={project.website} target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/15 text-white text-xs font-semibold hover:bg-white/5 transition-colors">
+                  <ExternalLink size={14} /> Live
+                </a>
+              )}
+            </div>
+          </div>
+
+          <div className="space-y-8 text-gray-400 leading-relaxed">
+            <div>
+              <p className="text-[9px] uppercase tracking-widest text-gray-600 font-semibold mb-3">The idea</p>
+              <p className="text-base text-gray-300 leading-relaxed border-l-2 pl-4" style={{ borderColor: project.color + '55' }}>{project.motivation}</p>
+            </div>
+
+            <div>
+              <p className="text-[9px] uppercase tracking-widest text-gray-600 font-semibold mb-3">Overview</p>
+              <p className="text-sm text-gray-400 leading-relaxed">{project.overview}</p>
+            </div>
+
+            {project.keyMetrics && (
+              <div>
+                <p className="text-[9px] uppercase tracking-widest text-gray-600 font-semibold mb-4">Key numbers</p>
+                <div className="grid grid-cols-3 gap-3">
+                  {project.keyMetrics.map((metric: any, idx: number) => (
+                    <div key={idx} className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.07] text-center">
+                      <span className="block text-xl font-black font-mono mb-1" style={{ color: project.color }}>{metric.value}</span>
+                      <span className="block text-[9px] uppercase tracking-widest text-gray-600 font-semibold leading-tight">{metric.label}</span>
+                    </div>
                   ))}
                 </div>
               </div>
+            )}
 
-              <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-                {project.link && project.link !== "#" && (
-                  <a 
-                    href={project.link} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="px-8 py-4 bg-white text-black font-black uppercase tracking-widest text-[10px] rounded-2xl flex items-center justify-center gap-3 hover:scale-[1.02] transition-transform shadow-xl"
-                  >
-                    <GithubIcon size={18} /> Repository
-                  </a>
-                )}
-                {project.website && (
-                  <a 
-                    href={project.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-8 py-4 border border-[#ffffff11] hover:bg-[#ffffff05] text-white font-black uppercase tracking-widest text-[10px] rounded-2xl flex items-center justify-center gap-3 transition-colors"
-                  >
-                    <ExternalLink size={18} /> View Website
-                  </a>
-                )}
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="p-5 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+                <p className="text-[9px] uppercase tracking-widest text-gray-600 font-semibold mb-2.5">How it was built</p>
+                <p className="text-sm text-gray-400 leading-relaxed">{project.assembly}</p>
+              </div>
+              <div className="p-5 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+                <p className="text-[9px] uppercase tracking-widest text-gray-600 font-semibold mb-2.5">Key features</p>
+                <p className="text-sm text-gray-400 leading-relaxed">{project.features}</p>
               </div>
             </div>
-          </motion.div>
 
-          <div className="space-y-12">
-            <div className="aspect-video rounded-[3rem] bg-[#151518] border border-[#ffffff11] overflow-hidden shadow-2xl relative group">
-              <ProjectVisual type={project.title} color={project.color} />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-8">
-                <p className="text-sm font-mono text-gray-300">Interactive 3D Visualization of {project.title} core concepts.</p>
-              </div>
-            </div>
-            
-            <div className="prose prose-invert max-w-none">
-              <div className="space-y-16 text-gray-400 text-lg leading-relaxed">
-                <section>
-                  <h4 className="text-white font-display text-2xl mb-6 italic flex items-center gap-3">
-                    <div className="w-8 h-[1px] bg-white/20" /> Why this idea?
-                  </h4>
-                  <p className="border-l-2 border-[#ffffff11] pl-6 py-2 text-xl">{project.motivation}</p>
-                </section>
-
-                <section>
-                  <h4 className="text-white font-display text-2xl mb-6">Overview</h4>
-                  <p>{project.overview}</p>
-                </section>
-
-                <div className="grid md:grid-cols-2 gap-8">
-                  <section className="p-8 rounded-3xl bg-[#ffffff03] border border-[#ffffff05] hover:border-[#ffffff11] transition-colors">
-                    <h4 className="text-white font-display text-xl mb-4 flex items-center gap-2">
-                      <Cpu size={20} className="text-gray-500" /> How it was assembled
-                    </h4>
-                    <p className="text-sm leading-relaxed">{project.assembly}</p>
-                  </section>
-
-                  <section className="p-8 rounded-3xl bg-[#ffffff03] border border-[#ffffff05] hover:border-[#ffffff11] transition-colors">
-                    <h4 className="text-white font-display text-xl mb-4 flex items-center gap-2">
-                      <Zap size={20} className="text-gray-500" /> Keynote Features
-                    </h4>
-                    <p className="text-sm leading-relaxed">{project.features}</p>
-                  </section>
-                </div>
-
-                <section className="p-8 rounded-3xl bg-[#ffffff03] border border-[#ffffff05] relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 blur-3xl rounded-full -mr-16 -mt-16" />
-                  <h4 className="text-white font-display text-xl mb-6 flex items-center gap-2">
-                    <Sparkles size={20} className="text-gray-500" /> Future Improvements
-                  </h4>
-                  <p className="text-sm leading-relaxed">{project.improvements}</p>
-                </section>
-
-                <div className="flex items-center gap-8 p-8 rounded-3xl border border-dashed border-[#ffffff11]">
-                  <div className="flex-shrink-0 w-12 h-12 rounded-full bg-white/5 flex items-center justify-center">
-                    <Heart size={24} className="text-gray-400" />
-                  </div>
-                  <p className="text-sm italic">
-                    These projects are being continuously improved. If you have any suggestions for the same, please feel free to reach out.
-                  </p>
-                </div>
-              </div>
+            <div className="p-5 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+              <p className="text-[9px] uppercase tracking-widest text-gray-600 font-semibold mb-2.5">What's next</p>
+              <p className="text-sm text-gray-400 leading-relaxed">{project.improvements}</p>
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </motion.div>
   );
 };
 
+const ResearchCard: React.FC<{ 
+  title: string; 
+  desc: string; 
+  tags: string[]; 
+  color: string;
+  status: string;
+  keyMetrics: { label: string; value: string }[];
+  onKnowMore: () => void;
+}> = ({ title, desc, tags, color, status, keyMetrics, onKnowMore }) => (
+  <motion.div
+    whileHover={{ y: -10 }}
+    className="group relative bg-[#111113] border border-[#ffffff11] hover:border-[#ffffff22] p-8 rounded-[2.5rem] overflow-hidden flex flex-col justify-between cursor-pointer transition-all shadow-xl"
+    onClick={onKnowMore}
+  >
+    <div 
+      className="absolute top-0 right-0 w-32 h-32 blur-3xl opacity-10 group-hover:opacity-20 transition-opacity"
+      style={{ backgroundColor: color }}
+    />
+    
+    <div>
+      <div className="flex justify-between items-center mb-6">
+        <span 
+          className="text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full bg-black/40 border font-mono"
+          style={{ borderColor: color + "44", color: color }}
+        >
+          {status}
+        </span>
+        <div className="w-10 h-10 rounded-xl overflow-hidden border border-[#ffffff05] bg-black/40 group-hover:scale-105 transition-transform">
+          <ProjectVisual type={title} color={color} />
+        </div>
+      </div>
+
+      <h3 className="text-2xl font-bold mb-4 font-display" style={{ color: color }}>{title}</h3>
+      <p className="text-gray-400 text-sm mb-6 leading-relaxed line-clamp-3">{desc}</p>
+    </div>
+
+    <div>
+      <div className="grid grid-cols-3 gap-2 mb-6 p-3 rounded-2xl bg-black/30 border border-[#ffffff05]">
+        {keyMetrics.map((m, idx) => (
+          <div key={idx} className="text-center">
+            <span className="block text-xs md:text-sm font-black font-mono tracking-tight text-white">{m.value}</span>
+            <span className="block text-[8px] uppercase tracking-wider text-gray-500 font-bold mt-1 leading-none">{m.label}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex flex-wrap gap-1.5 mb-8">
+        {tags.map(tag => (
+          <span key={tag} className="text-[9px] uppercase tracking-widest font-bold px-2.5 py-1 rounded-full bg-[#ffffff03] border border-[#ffffff0a] text-gray-400">
+            {tag}
+          </span>
+        ))}
+      </div>
+      
+      <button 
+        onClick={(e) => {
+          e.stopPropagation();
+          onKnowMore();
+        }}
+        className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white hover:text-[#ff71ce] transition-colors group/btn"
+      >
+        Read Abstract <ArrowRight size={16} className="group-hover/btn:translate-x-1 transition-transform" />
+      </button>
+    </div>
+  </motion.div>
+);
+
 const ResearchSection = ({ onKnowMore }: { onKnowMore: (r: any) => void }) => {
   const researches = [
     {
-      title: "Dynamic Adaptation in Cybersecurity",
-      desc: "An exploration into self-supervised learning for resilient security models.",
-      tags: ["Self-Supervised Learning", "Cybersecurity", "Zero-Day Defense"],
-      motivation: "Most security models are 'static'—they only know what they were trained on. When a brand new attack (Zero-Day) appears, they often fail.",
-      overview: "What if the model could 'adapt' its own brain in milliseconds while it's actually working?",
-      assembly: "I'm exploring a way for models to solve a self-supervised 'puzzle' (like guessing missing parts of a network packet) to help them align with new traffic patterns on the fly.",
-      features: "Solving the 'Static Defense Fallacy' where models fail against evolving threats.",
-      improvements: "Future work involves exploring multi-agent adaptation and more complex self-supervised tasks for deeper alignment.",
+      title: "REFLEX",
+      desc: "A way to stop AI security systems from being tricked into ignoring real attacks.",
+      tags: ["Self-Supervised Learning", "Adversarial Defense", "Packet Filtering"],
+      motivation: "Modern deep learning security systems are excellent at spotting attacks — right up until an attacker figures out how to confuse them. Real-time adaptation fixes can be poisoned by attackers feeding the model deliberately confusing data.",
+      overview: "REFLEX solves this without ever letting the model itself change. Acting like a filter in front of the model, incoming data is compared against statistical packet profiles. Anything outside the normal range is stripped, preserving accuracy and protecting the model from poisoning.",
+      assembly: "Built statistical packet baselining pipelines in Python. Designed high-performance filtering layers that process network packet records in parallel to minimize pipeline latency.",
+      features: "Recovers ~18-20% accuracy on major benchmarks, cuts false alarms to near-zero, and processes 80,000+ records per second.",
+      improvements: "Exploring multi-agent defensive collaboration and integration with smartNICs for hardware-level line-rate filtering.",
       color: "#ff71ce",
       type: "research",
+      status: "Manuscript under review",
+      keyMetrics: [
+        { label: "Accuracy Recov.", value: "~18–20%" },
+        { label: "False Alarms", value: "Near-Zero" },
+        { label: "Throughput", value: "80k+/s" }
+      ],
       link: "#"
     },
     {
-      title: "Finding the 'Truth' in Network Traffic",
-      desc: "Using causal reasoning to build robust, cross-domain security models.",
-      tags: ["Causal Reasoning", "Network Traffic", "Robustness"],
-      motivation: "AI models often get distracted by 'spurious correlations'—things that look like a pattern but aren't (like traffic volume).",
-      overview: "Focus only on the 'invariant' features—the physical constraints of an attack that can't be easily changed (like the specific timing of a TCP handshake).",
-      assembly: "Using causal reasoning to separate these core physical truths from the noisy environment, making security models much more robust across different networks.",
-      features: "Building models that work across different networks (cross-domain) without needing constant retraining.",
-      improvements: "Exploring causal discovery algorithms to automatically identify invariant features in diverse network environments.",
+      title: "PI-IDS (Protocol-Invariant Intrusion Detection)",
+      desc: "Teaching security AI to notice what actually matters about an attack — not just what happened to be true in one dataset.",
+      tags: ["Causal Inference", "Domain Generalization", "Explainable AI"],
+      motivation: "A security model trained on one network often performs poorly on another because it learns dataset-specific coincidences (like traffic volume anomalies) instead of the actual physical constraints of the attack.",
+      overview: "PI-IDS enforces protocol-invariance. By directing the AI to focus exclusively on features rooted in how network protocols actually function (e.g. TCP handshake spec violations), it remains highly accurate on completely unseen networks, including cloud setups.",
+      assembly: "Designed causal inference models to extract invariant signals. Implemented feature extractors that map raw packet handshakes into RFC compliance states.",
+      features: "20%+ improvement on unseen networks, works consistently in cloud environments, and operates using just 3 core explainable protocol signals.",
+      improvements: "Adapting the protocol invariance framework to inspect encrypted packets and application-layer protocols.",
       color: "#01cdfe",
       type: "research",
+      status: "Manuscript under review",
+      keyMetrics: [
+        { label: "Cross-Net Improv.", value: "20%+" },
+        { label: "Cloud Support", value: "Robust" },
+        { label: "Signals", value: "3 Explain" }
+      ],
+      link: "#"
+    },
+    {
+      title: "Circuit Atlas (Ongoing)",
+      desc: "Trying to figure out exactly why AI language models sometimes confidently make things up.",
+      tags: ["PyTorch", "TransformerLens", "Weights & Biases"],
+      motivation: "Large language models hallucinate false facts with absolute confidence, yet their internal activation layers remain an unmapped black box.",
+      overview: "Circuit Atlas leverages mechanistic interpretability to treat a language model like an electrical circuit. By selectively intervening on different internal neuron pathways during generation, we isolate the specific circuits responsible for hallucinations.",
+      assembly: "Built on PyTorch and TransformerLens. Structured automated diagnostic pipelines that capture and visualize activation weights, logged and tracked using Weights & Biases.",
+      features: "Automated circuit discovery tools, activation weight intervention test suite, and integrated experiment logging.",
+      improvements: "Scaling the interpretability framework to support large model families (e.g. Llama-3.1-70B) and building automated intervention patches.",
+      color: "#fffb96",
+      type: "research",
+      status: "In progress",
+      keyMetrics: [
+        { label: "Approach", value: "Mechanistic" },
+        { label: "Primary Tool", value: "PyTorch" },
+        { label: "Log Sync", value: "W&B" }
+      ],
       link: "#"
     }
   ];
@@ -1130,22 +1202,145 @@ const ResearchSection = ({ onKnowMore }: { onKnowMore: (r: any) => void }) => {
     <Section id="research">
       <div className="mb-16">
         <h2 className="text-4xl md:text-6xl font-black font-display uppercase tracking-tighter">
-          Current <span className="text-[#ff71ce]">Researches</span> & Explorations
+          Academic <span className="text-[#ff71ce]">Research</span> & Papers
         </h2>
-        <p className="text-gray-500 mt-4">Diving deep into the mechanics of security and causal reasoning.</p>
+        <p className="text-gray-500 mt-4">Diving deep into self-supervised defense, causal reasoning, and mechanistic interpretability.</p>
       </div>
-      <div className="grid md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {researches.map((r, i) => (
-          <ProjectCard 
+          <ResearchCard 
             key={i}
             title={r.title} 
             desc={r.desc} 
             tags={r.tags}
             color={r.color}
-            type={r.type}
+            status={r.status}
+            keyMetrics={r.keyMetrics}
             onKnowMore={() => onKnowMore(r)}
           />
         ))}
+      </div>
+    </Section>
+  );
+};
+
+const JourneySection = () => {
+  return (
+    <Section id="journey">
+      <div className="mb-16">
+        <h2 className="text-4xl md:text-6xl font-black font-display uppercase tracking-tighter">
+          My <span className="text-[#01cdfe]">Journey</span>
+        </h2>
+        <p className="text-gray-500 mt-4">Academic foundation and hands-on industry experience.</p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        {/* Left Column: Education */}
+        <motion.div 
+          initial={{ opacity: 0, x: -50 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="bg-[#151518] border border-[#ffffff11] p-8 md:p-10 rounded-[2.5rem] relative overflow-hidden"
+        >
+          <div className="absolute top-0 right-0 w-32 h-32 blur-3xl opacity-10 bg-[#01cdfe]" />
+          <div className="flex items-center gap-4 mb-8">
+            <div className="p-3.5 rounded-2xl bg-[#01cdfe11] text-[#01cdfe]">
+              <BookOpen size={24} />
+            </div>
+            <h3 className="text-2xl md:text-3xl font-black font-display tracking-tight text-white">EDUCATION</h3>
+          </div>
+
+          <div className="space-y-8 relative pl-6 border-l border-[#ffffff11]">
+            <div className="relative">
+              <div className="absolute -left-[31px] top-1.5 w-3 h-3 rounded-full bg-[#01cdfe] border-4 border-[#151518]" />
+              <div className="flex justify-between items-start flex-wrap gap-2 mb-2">
+                <h4 className="text-xl font-bold text-white">Vellore Institute of Technology (VIT) Chennai</h4>
+                <span className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-[#ffffff05] text-gray-400 border border-[#ffffff11] font-mono">Jul 2024–Present</span>
+              </div>
+              <p className="text-[#01cdfe] font-semibold text-sm mb-4">B.Tech, Computer Science & Engineering (AI & ML) · CGPA: 8.77/10.0</p>
+              
+              <div className="space-y-4">
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 block mb-2">Key Coursework</span>
+                  <div className="flex flex-wrap gap-2">
+                    {['Data Structures & Algorithms', 'Operating Systems', 'DBMS', 'Computer Networks', 'OOP', 'Machine Learning', 'Deep Learning', 'Software Engineering'].map(c => (
+                      <span key={c} className="text-[10px] px-2.5 py-1 rounded bg-[#ffffff05] border border-[#ffffff05] text-gray-400 font-medium">{c}</span>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 block mb-2">Clubs & Activities</span>
+                  <div className="flex flex-wrap gap-2">
+                    {['SEDS Antariksh (Space Tech)', 'Linux Users Club'].map(club => (
+                      <span key={club} className="text-[10px] px-2.5 py-1 rounded bg-[#01cdfe11] border border-[#01cdfe22] text-[#01cdfe] font-semibold">{club}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Right Column: Experience */}
+        <motion.div 
+          initial={{ opacity: 0, x: 50 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="bg-[#151518] border border-[#ffffff11] p-8 md:p-10 rounded-[2.5rem] relative overflow-hidden"
+        >
+          <div className="absolute top-0 right-0 w-32 h-32 blur-3xl opacity-10 bg-[#ff71ce]" />
+          <div className="flex items-center gap-4 mb-8">
+            <div className="p-3.5 rounded-2xl bg-[#ff71ce11] text-[#ff71ce]">
+              <Briefcase size={24} />
+            </div>
+            <h3 className="text-2xl md:text-3xl font-black font-display tracking-tight text-white">EXPERIENCE</h3>
+          </div>
+
+          <div className="space-y-10 relative pl-6 border-l border-[#ffffff11]">
+            {/* Experience Item 1 */}
+            <div className="relative">
+              <div className="absolute -left-[31px] top-1.5 w-3 h-3 rounded-full bg-[#ff71ce] border-4 border-[#151518]" />
+              <div className="flex justify-between items-start flex-wrap gap-2 mb-2">
+                <h4 className="text-lg font-bold text-white">Undergraduate Research Intern</h4>
+                <span className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-[#ffffff05] text-gray-400 border border-[#ffffff11] font-mono">May 2025–Present</span>
+              </div>
+              <p className="text-[#ff71ce] font-semibold text-sm mb-3">Network Security & ML, VIT Chennai</p>
+              <ul className="space-y-2.5 text-gray-400 text-sm list-none pl-0">
+                <li className="flex items-start gap-2">
+                  <span className="text-[#ff71ce] mt-1">▪</span>
+                  <span>Two research papers written under faculty supervision, both currently under peer review (focusing on adversarial learning defense and causal reasoning in network security).</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Experience Item 2 */}
+            <div className="relative">
+              <div className="absolute -left-[31px] top-1.5 w-3 h-3 rounded-full bg-gray-600 border-4 border-[#151518]" />
+              <div className="flex justify-between items-start flex-wrap gap-2 mb-2">
+                <h4 className="text-lg font-bold text-white">Software Development Intern</h4>
+                <span className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-[#ffffff05] text-gray-400 border border-[#ffffff11] font-mono">Jun–Aug 2024</span>
+              </div>
+              <p className="text-gray-400 font-semibold text-sm mb-3">Hackfinity, Chennai (Freelance Contributor)</p>
+              <ul className="space-y-2.5 text-gray-400 text-sm list-none pl-0">
+                <li className="flex items-start gap-2">
+                  <span className="text-gray-500 mt-1">▪</span>
+                  <span>Rebuilt the company's official website as a freelance contributor — shipped ahead of schedule with zero bugs reported after launch.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-gray-500 mt-1">▪</span>
+                  <span>Built several reusable UI components that fixed inconsistent layouts across devices.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-gray-500 mt-1">▪</span>
+                  <span>Found and fixed a calculation bug in the frontend that had been silently giving users wrong numbers.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </Section>
   );
@@ -1160,85 +1355,83 @@ export default function App() {
 
   const projects = [
     { 
-      title: "Spark", 
+      title: "NetSentinel", 
       type: "personal",
-      desc: "An exploration into neural brainstorming and spatial data architectures.", 
-      motivation: "I was fascinated by how our brains connect disparate ideas. I wanted to see if I could create a digital space that mirrors that 'spark' of inspiration.",
-      overview: "A 3D workspace where your GitHub projects aren't just a list, but a constellation of ideas you can explore and expand upon using AI.",
-      assembly: "I used Three.js for the 3D environment and React for the interface. The hardest part was getting the AI (Llama) to understand the context of a whole codebase and suggest meaningful next steps.",
-      features: "Interactive 3D project maps, AI-powered roadmap generation, and a 'brainstorming' mode that helps you link different technologies.",
-      improvements: "I'd love to add real-time collaboration so teams can brainstorm together in the same 3D space, and maybe integrate more data sources like Jira or Notion.",
-      tags: ['TypeScript', 'React', 'Three.js', 'Llama 3.3', 'Groq API'],
-      color: "#a100ff",
-      link: "https://github.com/sosush/Spark",
-      website: "https://spark-constellation.vercel.app/"
+      desc: "A dashboard that watches network traffic in real time and catches attacks as they happen.", 
+      motivation: "Most security tools tell you about a breach after it's already happened. NetSentinel is built to catch trouble while it's still unfolding.",
+      overview: "It watches live network traffic, runs it through a machine learning model trained to recognize the fingerprints of an attack, and flags anything suspicious on an interactive dashboard — instantly, not after the fact.",
+      assembly: "Under the hood, it uses an XGBoost model. Every experiment is version-tracked with DVC and containerized using Docker, allowing it to be dropped onto any server without environment friction.",
+      features: "Real-time traffic processing, FastAPI backend, DVC data versioning, containerized deployment, and an automatic drift detection alert system for model retraining.",
+      improvements: "Integrating automated test-time adaptation so the classifier adjusts to changing environments dynamically without offline retraining.",
+      tags: ['Python', 'FastAPI', 'XGBoost', 'Docker', 'DVC', 'GitHub Actions'],
+      color: "#ff4d4d",
+      link: "https://github.com/sosush/NetSentinel"
     },
     { 
-      title: "Orbital", 
-      type: "team",
-      desc: "A real-time visualization of Earth's artificial satellite network.", 
-      motivation: "Space is getting crowded, and I wanted to visualize the 'invisible' network of satellites that we rely on every day.",
-      overview: "A real-time tracker that shows you exactly where satellites are orbiting Earth right now.",
-      assembly: "We pulled data from CelesTrak and used complex math (SGP4) to calculate their positions. We used Three.js to render the Earth and the satellite paths.",
-      features: "Real-time tracking of thousands of satellites, 3D Earth visualization, and the ability to filter by satellite type (like Starlink or GPS).",
-      improvements: "Adding historical data to see how the number of satellites has grown over time, and maybe a 'collision risk' predictor to show where space debris is most dangerous.",
-      tags: ['React', 'Three.js', 'CelesTrak API', 'GLSL'],
+      title: "QuantLedger", 
+      type: "personal",
+      desc: "A personal investment tracker that thinks like a quant, not just a spreadsheet.", 
+      motivation: "Most portfolio trackers just show you what your stocks are worth today. QuantLedger goes further — it tries to answer if your portfolio is actually good, or if it just looks good.",
+      overview: "It pulls in real market data and calculates the same kinds of risk metrics professional fund managers use — things like Sharpe ratio, volatility, and asset correlation.",
+      assembly: "Built as a full-stack application using FastAPI for the backend, React 19 for the frontend, and PostgreSQL/Redis for fast data caching and management. Integrates with the Yahoo Finance API for live market feeds.",
+      features: "Live financial dashboard, Sharpe ratio and volatility calculations, momentum and fundamentals scoring, and a 3-year strategy backtester.",
+      improvements: "Adding Monte Carlo simulations for future returns projections and automated asset rebalancing suggestions based on target risk profiles.",
+      tags: ['FastAPI', 'React 19', 'PostgreSQL', 'Redis', 'TypeScript', 'Yahoo Finance API'],
       color: "#01cdfe",
-      link: "https://github.com/sosush/Orbital",
-      website: "https://orbital-brown.vercel.app/"
+      link: "https://github.com/sosush/QuantLedger"
+    },
+    { 
+      title: "DISENT-KWS", 
+      type: "team",
+      desc: "A tiny on-device system that doesn't just hear its wake word — it recognizes who said it.", 
+      motivation: "Wake word systems typically check what was said, not who said it, meaning anyone can trigger them. We wanted to build a speaker-verified keyword spotter that runs locally.",
+      overview: "Built with Swarnim Tripathi at EnnovateX hackathon (Team 'Noisy AF') for speech disentanglement, this tiny model verifies both the wake phrase and the enrolled speaker's voice.",
+      assembly: "Uses PyTorch, BC-ResNet, Conformer, and ECAPA-TDNN. The audio signals for words and voice identity are separated during training using an adversarial leak-prevention penalty, then optimized via ONNX.",
+      features: "Under 2M parameters (<1MB compressed), 26ms response time, 95%+ keyword accuracy, speaker voice verification, and works down to -5dB SNR background noise.",
+      improvements: "Exploring Mamba SSM (State Space Models) for sequence modeling to further reduce computation costs on microcontrollers.",
+      tags: ['PyTorch', 'BC-ResNet', 'Conformer', 'ECAPA-TDNN', 'Mamba SSM', 'ONNX'],
+      color: "#8a2be2",
+      link: "https://github.com/sosush/DISENT_KWS"
     },
     { 
       title: "Genesis", 
       type: "personal",
-      desc: "Investigating algorithmic evolution through Genetic Programming.", 
-      motivation: "I wondered if we could use the same principles of evolution that created us to create better code.",
-      overview: "A sandbox where algorithms 'evolve' over time to solve clinical data processing tasks more efficiently.",
-      assembly: "I built an evolutionary engine in Python. It creates a population of algorithms, tests them, and lets the best ones 'breed' to create the next generation.",
-      features: "Automated algorithm discovery, visual tracking of the evolutionary process, and a focus on clinical data accuracy.",
-      improvements: "I want to make the evolutionary process faster by using GPU acceleration and explore more complex 'mutations' that could lead to even more creative solutions.",
-      tags: ['Python', 'Genetic Algorithms', 'Machine Learning', 'Clinical Data'],
+      desc: "An AI that writes code the way evolution writes DNA — by trying, failing, and mutating until something works.", 
+      motivation: "I wondered if we could use the same evolutionary principles that created biology to generate cleaner, more creative software solutions.",
+      overview: "A sandbox where code structures 'evolve' over generations using genetic programming to solve algorithmic tasks. If pure evolution gets stuck, it uses an LLM as an expert mutation guide.",
+      assembly: "Built in Python with a Streamlit interface. It connects to Groq API (Llama-3.3-70B) to intelligently direct mutation paths, helping it solve complex algorithmic problems.",
+      features: "Genetic programming engine, visual generation tracker, LLM-guided mutation feedback loop, and success on LeetCode Hard tier tasks.",
+      improvements: "Adding GPU-accelerated population evaluation and scaling the codebase to support multi-file compilation.",
+      tags: ['Python', 'Streamlit', 'Groq API', 'Llama 3.3', 'Genetic Programming'],
       color: "#05ffa1",
       link: "https://github.com/sosush/Genesis"
     },
     { 
-      title: "Prism Protocol", 
+      title: "Prism", 
       type: "team",
-      desc: "Exploring biometric verification through corneal light transport.", 
-      motivation: "Deepfakes are becoming a real problem. I wanted to find a way to prove someone is human using something that's hard to fake: the way light enters their eyes.",
-      overview: "A biometric system that uses the unique reflections in your eyes to verify you're a real person without storing your private data.",
-      assembly: "We used computer vision to track eye reflections and zero-knowledge proofs (ZKPs) to keep everything private. It was a big challenge to get the light physics right.",
-      features: "Secure 'Proof of Humanity,' privacy-first biometric verification, and integration with blockchain for decentralized identity.",
-      improvements: "Making it work across more types of cameras (like low-res webcams) and reducing the time it takes to generate the privacy proofs.",
-      tags: ['Computer Vision', 'ZK-ML', 'Blockchain', 'Spring Boot'],
+      desc: "A way to prove you're a real human online — using physics, not passwords.", 
+      motivation: "Deepfakes and AI-generated avatars are bypassing traditional security. We built Prism at the DEFY Hackathon to verify the physics of a living human.",
+      overview: "A biometric verification protocol that checks physical indicators a deepfake cannot replicate, verifying humanity without storing raw private data.",
+      assembly: "Built as a group hackathon project. Uses Python, PyTorch, MediaPipe for physical checks, Solidity smart contracts, and Next.js. We implemented Zero-Knowledge Proofs (ZKP) to protect privacy.",
+      features: "Corneal reflection analysis, skin subsurface light transport verification, heartbeat pulse-shift checking, and Zero-Knowledge Proof (ZKP) verification tokens.",
+      improvements: "Optimizing the ZKP generation pipeline to decrease mobile browser verification times and improving webcam support.",
+      tags: ['Python', 'FastAPI', 'PyTorch', 'MediaPipe', 'Solidity', 'Next.js'],
       color: "#00ffcc",
-      link: "https://github.com/sosush/Prism-all"
+      link: "https://github.com/sosush/Prism"
     },
     { 
-      title: "Intrusion Detection System", 
+      title: "Spark", 
       type: "personal",
-      desc: "A study in pattern recognition for network intrusion detection.", 
-      motivation: "After my own network was targeted, I realized that static firewalls aren't enough. I wanted to build something that could 'learn' what an attack looks like.",
-      overview: "An intelligent sentinel that monitors network traffic and uses machine learning to spot suspicious patterns before they cause damage.",
-      assembly: "I used Python and Scikit-learn to train models on huge datasets of network traffic. I had to learn a lot about different types of cyberattacks to make it effective.",
-      features: "Real-time threat detection, classification of attack types (like DDoS or Brute Force), and a simple dashboard to see your network's health.",
-      improvements: "I'm looking into 'Test-Time Adaptation' (like in my research) so the system can learn from new attacks it sees in real-time without needing to be retrained from scratch.",
-      tags: ['Python', 'Scikit-learn', 'Flask', 'Cybersecurity', 'Machine Learning'],
-      color: "#ff4d4d",
-      link: "https://github.com/sosush/ML-IDS"
-    },
-    { 
-      title: "LearnBuddy", 
-      type: "team",
-      desc: "Investigating adaptive learning interfaces and cognitive load.", 
-      motivation: "Learning something new can be overwhelming. We wanted to build a companion that helps you navigate that 'ocean of knowledge' without getting lost.",
-      overview: "An AI tutor that adapts to your learning style, breaking down complex topics into bite-sized, understandable pieces.",
-      assembly: "We used Large Language Models and a technique called RAG to make sure the AI gives accurate, context-aware answers. We built the interface to be as simple and focused as possible.",
-      features: "Personalized learning paths, AI-powered explanations, and a focus on reducing 'cognitive load' for the student.",
-      improvements: "Adding a 'study group' feature where the AI can facilitate discussions between students, and maybe integrating more interactive quizzes and exercises.",
-      tags: ['React', 'Node.js', 'OpenAI API', 'RAG'],
-      color: "#8a2be2",
-      link: "https://github.com/sosush/learn_buddy",
-      website: "https://learn-buddy.netlify.app/"
+      desc: "Turns a codebase into a 3D world you can actually walk through and understand.", 
+      motivation: "Reading a massive codebase from static lists is incredibly tedious. Spark attempts to solve this by rendering code repositories as explorable 3D star maps.",
+      overview: "It builds a visual, explorable Three.js version of a project's architecture, paired with an AI assistant that explains what any selected component or function does in real-time.",
+      assembly: "Uses Next.js for the UI, Three.js for the interactive 3D graphs, FastAPI and Supabase for backend metadata, and Groq/Llama for generating structural code explanations.",
+      features: "Interactive 3D graph visualizations, codebase-to-graph parser, semantic code search, and integrated LLM tour guide.",
+      improvements: "Adding real-time multiplayer lobbies for team walkthroughs and expanding language support for AST parsing.",
+      tags: ['Next.js', 'FastAPI', 'Groq', 'Supabase', 'Three.js'],
+      color: "#a100ff",
+      link: "https://github.com/sosush/Spark",
+      website: "https://spark-constellation.vercel.app/"
     }
   ];
 
@@ -1272,118 +1465,148 @@ export default function App() {
       </AnimatePresence>
 
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 w-full z-50 px-6 py-8 flex justify-between items-center mix-blend-difference">
-        <motion.div 
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="flex items-center gap-4"
-        >
-          <CustomLogo />
-          <span className="text-xl font-black tracking-tighter uppercase">sosush.</span>
-        </motion.div>
-        <div className="hidden md:flex gap-8 text-[10px] font-bold uppercase tracking-[0.2em]">
-          {['About', 'Work', 'Skills', 'Contact'].map((item) => (
-            <a key={item} href={`#${item.toLowerCase()}`} className="hover:text-[#ff71ce] transition-colors">
-              {item}
-            </a>
-          ))}
+      <nav className="fixed top-0 left-0 w-full z-50">
+        <div className="mx-auto max-w-screen-xl px-6 md:px-10">
+          <div className="flex justify-between items-center py-4 mt-3 bg-white/[0.04] backdrop-blur-md border border-white/[0.08] rounded-2xl px-6">
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex items-center gap-3"
+            >
+              <CustomLogo />
+              <span className="text-sm font-bold tracking-tight text-white/80">sosush.</span>
+            </motion.div>
+            <div className="hidden md:flex gap-6 text-[11px] font-medium text-gray-400">
+              {['About', 'Journey', 'Work', 'Research', 'Skills', 'Contact'].map((item) => (
+                <a key={item} href={`#${item.toLowerCase()}`} className="hover:text-white transition-colors duration-200">
+                  {item}
+                </a>
+              ))}
+            </div>
+          </div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <Section className="relative text-center items-center">
-        <motion.div style={{ opacity: heroOpacity, y: heroY }} className="max-w-4xl">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1 }}
-            className="inline-block px-4 py-1 rounded-full bg-[#ff71ce11] border border-[#ff71ce33] text-[#ff71ce] text-[10px] font-bold uppercase tracking-widest mb-8"
+      <section className="relative min-h-screen flex flex-col justify-center items-center text-center px-6">
+        <motion.div style={{ opacity: heroOpacity, y: heroY }} className="max-w-3xl">
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-[#ff71ce] text-xs font-semibold uppercase tracking-[0.3em] mb-6"
           >
-            <Sparkles size={12} className="inline mr-2" /> Welcome to my Tech Space
+            AI / ML Engineer & Security Researcher
+          </motion.p>
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, delay: 0.1 }}
+            className="text-5xl md:text-7xl font-black leading-[1] tracking-tight mb-6 font-display text-white"
+          >
+            Sohini Banerjee
+          </motion.h1>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-2xl md:text-3xl font-black mb-8 font-display"
+          >
+            I build{' '}<TypingText texts={['intelligence.', 'robust systems.', 'security tools.', 'with purpose.']} />
           </motion.div>
-          <h1 className="text-6xl md:text-8xl font-black leading-[0.9] tracking-tighter mb-8 font-display">
-            I BUILD <br />
-            <TypingText texts={['INTELLIGENCE', 'GRACEFULNESS', 'SECURITY', 'MY IMAGINATIONS']} />
-          </h1>
-          <p className="text-xl md:text-2xl text-gray-400 max-w-2xl mx-auto mb-12 leading-relaxed">
-            Just a coder exploring the intersection of 
-            <span className="text-white"> artificial intelligence </span> 
-            and <span className="text-white"> human-centric design</span>.
-          </p>
-          <div className="flex flex-col items-center gap-8">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-10 py-5 bg-[#ff71ce] text-black font-bold rounded-2xl shadow-[0_0_40px_rgba(255,113,206,0.4)]"
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="text-base md:text-lg text-gray-500 max-w-xl mx-auto mb-10 leading-relaxed"
+          >
+            CS undergrad who likes breaking things to understand how to protect them. I build systems that don't fall apart when things go wrong.
+          </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="flex flex-wrap justify-center gap-4"
+          >
+            <motion.a
+              href="#work"
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.97 }}
+              className="px-7 py-3.5 bg-[#ff71ce] text-black text-sm font-bold rounded-xl shadow-[0_0_30px_rgba(255,113,206,0.35)] hover:shadow-[0_0_45px_rgba(255,113,206,0.5)] transition-shadow"
             >
-              <a href="#work">Explore My Work</a>
-            </motion.button>
-          </div>
+              View my work
+            </motion.a>
+            <motion.a
+              href="#about"
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.97 }}
+              className="px-7 py-3.5 border border-white/15 text-white text-sm font-semibold rounded-xl hover:bg-white/5 transition-colors"
+            >
+              About me
+            </motion.a>
+          </motion.div>
         </motion.div>
         
         <motion.div 
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
+          animate={{ y: [0, 8, 0] }}
+          transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
           className="absolute bottom-10 left-1/2 -translate-x-1/2 text-gray-600"
         >
-          <ChevronDown />
+          <ChevronDown size={20} />
         </motion.div>
-      </Section>
+      </section>
 
       {/* About Section */}
       <Section id="about">
-        <div className="grid md:grid-cols-2 gap-20 items-center">
-          <div className="relative group">
-            <div className="aspect-video rounded-[2rem] bg-[#0a0a0c] border border-[#ffffff11] overflow-hidden shadow-2xl">
+        <div className="grid md:grid-cols-2 gap-16 items-center">
+          <div className="relative">
+            <div className="aspect-video rounded-2xl bg-[#080809] border border-white/[0.08] overflow-hidden shadow-2xl">
               <CodeEditorVisual />
-            </div>
-            <div className="absolute -bottom-4 -right-4 p-4 bg-[#151518] border border-[#ffffff11] rounded-2xl">
-              <Zap className="text-[#fffb96]" />
             </div>
           </div>
           <div>
-            <h2 className="text-4xl md:text-5xl font-black mb-8 font-display uppercase tracking-tighter">
-              The Mind Behind <br /> The <span className="text-[#01cdfe]">Terminal</span>
+            <p className="text-[#ff71ce] text-xs font-semibold uppercase tracking-[0.3em] mb-4">About me</p>
+            <h2 className="text-3xl md:text-4xl font-black mb-6 font-display leading-tight text-white">
+              Building things that matter, at the intersection of AI & security.
             </h2>
-            <div className="space-y-6 text-gray-400 leading-relaxed text-lg">
+            <div className="space-y-4 text-gray-500 leading-relaxed text-base">
               <p>
-                I'm <span className="text-white font-bold">Sohini</span>, a developer who lives at the edge of what's possible. 
-                My work is a blend of technical precision and artistic intuition.
+                I'm <span className="text-gray-300 font-semibold">Sohini Banerjee</span>, currently pursuing B.Tech in CSE (AI & ML) at VIT Chennai. CGPA 8.77.
               </p>
               <p>
-                I specialize in building systems that don't just work—they feel alive. 
-                From neural-inspired interfaces to complex backend architectures, 
-                I'm always pushing the boundaries of the digital canvas.
+                I specialize in building systems that don't fall apart when things go wrong — from ML-based intrusion detection to evolutionary code generation and mechanistic interpretability of LLMs.
               </p>
             </div>
-            <div className="mt-12 flex gap-4">
+            <div className="mt-8 flex gap-3">
               <motion.a
                 href="/Sohini_Banerjee_Resume.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
-                whileHover={{ y: -5 }}
-                className="flex items-center gap-3 px-6 py-4 bg-[#151518] border border-[#ffffff11] rounded-2xl hover:border-[#ff71ce33] transition-colors group"
+                whileHover={{ y: -2 }}
+                className="flex items-center gap-2 px-5 py-3 bg-white/[0.05] border border-white/[0.1] rounded-xl hover:border-[#ff71ce]/30 hover:bg-white/[0.08] transition-all group text-sm font-medium text-gray-300"
               >
-                <FileText size={20} className="text-[#ff71ce]" />
-                <span className="font-bold uppercase text-xs tracking-widest">View Resume</span>
-                <span className="text-gray-600 group-hover:text-white" aria-hidden="true">
-                  <ExternalLink size={14} />
-                </span>
+                <FileText size={16} className="text-[#ff71ce]" />
+                Resume
+                <ExternalLink size={12} className="text-gray-600 group-hover:text-gray-400 transition-colors" aria-hidden="true" />
               </motion.a>
             </div>
           </div>
         </div>
       </Section>
 
+      {/* Journey Section */}
+      <JourneySection />
+
       {/* Work Section */}
       <Section id="work">
-        <div className="mb-16">
-          <h2 className="text-4xl md:text-6xl font-black font-display uppercase tracking-tighter">
-            Selected <span className="text-[#05ffa1]">Artifacts</span>
+        <div className="mb-12">
+          <p className="text-[#05ffa1] text-xs font-semibold uppercase tracking-[0.3em] mb-4">Projects</p>
+          <h2 className="text-3xl md:text-4xl font-black font-display tracking-tight text-white">
+            Things I've built
           </h2>
-          <p className="text-gray-500 mt-4">A collection of things I've built with love and logic.</p>
+          <p className="text-gray-500 mt-3 text-base">A selection of personal and team projects across ML, security, and systems engineering.</p>
         </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
           {projects.map((p, i) => (
             <ProjectCard 
               key={i}
@@ -1402,138 +1625,112 @@ export default function App() {
       <ResearchSection onKnowMore={(r) => setSelectedProject(r)} />
 
       {/* Certificates Section */}
-      <Section id="certificates" className="!min-h-0 !justify-start !py-16">
-        <div className="max-w-4xl">
-          <h2 className="text-4xl md:text-5xl font-black font-display uppercase tracking-tighter mb-12">
-            Milestones & <span className="text-[#b967ff]">Certifications</span>
+      <section id="certificates" className="py-16 px-6 md:px-24 lg:px-32 max-w-screen-xl mx-auto w-full">
+        <div className="max-w-2xl">
+          <p className="text-[#b967ff] text-xs font-semibold uppercase tracking-[0.3em] mb-4">Recognition</p>
+          <h2 className="text-3xl font-black font-display tracking-tight text-white mb-8">
+            Certifications
           </h2>
-          <div className="space-y-4">
+          <div className="space-y-3">
             {certificates.map((cert, i) => (
               <motion.div 
                 key={i}
-                whileHover={{ x: 10 }}
-                className="flex items-center justify-between p-6 bg-[#151518] border border-[#ffffff11] rounded-2xl group hover:border-[#b967ff33] transition-all"
+                whileHover={{ x: 4 }}
+                className="flex items-center justify-between p-5 bg-white/[0.03] border border-white/[0.07] rounded-xl group hover:border-white/[0.14] hover:bg-white/[0.05] transition-all"
               >
-                <div className="flex items-center gap-6">
-                  <div className="p-3 rounded-xl bg-[#b967ff11] text-[#b967ff]">
-                    <Award size={24} />
+                <div className="flex items-center gap-4">
+                  <div className="p-2 rounded-lg bg-[#b967ff11] text-[#b967ff]">
+                    <Award size={18} />
                   </div>
                   <div>
-                    <h4 className="text-lg font-bold text-white">{cert.title}</h4>
-                    <p className="text-sm text-gray-500">{cert.issuer}</p>
+                    <h4 className="text-sm font-semibold text-white">{cert.title}</h4>
+                    <p className="text-xs text-gray-500 mt-0.5">{cert.issuer}</p>
                   </div>
                 </div>
                 <a 
                   href={cert.link} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="p-3 rounded-full bg-[#ffffff05] hover:bg-[#b967ff] hover:text-black transition-all"
+                  className="p-2 rounded-lg bg-white/[0.04] hover:bg-[#b967ff] hover:text-black text-gray-500 hover:text-black transition-all"
                 >
-                  <ExternalLink size={20} />
+                  <ExternalLink size={15} />
                 </a>
               </motion.div>
             ))}
           </div>
         </div>
-      </Section>
+      </section>
 
-      {/* Skills & Terminal Section */}
-      <Section id="skills" className="!min-h-0 !justify-start !py-16">
-        <div className="grid md:grid-cols-2 gap-20">
+      {/* Skills Section */}
+      <section id="skills" className="py-16 px-6 md:px-24 lg:px-32 max-w-screen-xl mx-auto w-full">
+        <p className="text-[#fffb96] text-xs font-semibold uppercase tracking-[0.3em] mb-4">Skills</p>
+        <h2 className="text-3xl font-black font-display tracking-tight text-white mb-10">What I work with</h2>
+        <div className="grid md:grid-cols-2 gap-10">
           <div>
-            <h2 className="text-4xl md:text-6xl font-black font-display uppercase tracking-tighter mb-12">
-              My <span className="text-[#fffb96]">Power-ups</span>
-            </h2>
-            <div className="space-y-12">
-              <div>
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="p-3 rounded-2xl bg-[#ff71ce11] text-[#ff71ce]">
-                    <Code2 size={24} />
-                  </div>
-                  <h3 className="text-xl font-bold">Frontend Sorcery</h3>
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  {['React', 'Next.js', 'TypeScript', 'JavaScript', 'Tailwind', 'Framer Motion', 'Three.js', 'D3.js', 'GSAP'].map(s => (
-                    <span key={s} className="px-4 py-2 rounded-xl bg-[#151518] border border-[#ffffff11] text-sm text-gray-400">{s}</span>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="p-3 rounded-2xl bg-[#01cdfe11] text-[#01cdfe]">
-                    <Cpu size={24} />
-                  </div>
-                  <h3 className="text-xl font-bold">Backend Alchemy</h3>
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  {['Node.js', 'Express', 'Supabase', 'Vercel', 'LangChain', 'PyTorch', 'PostgreSQL', 'FastAPI', 'Flask', 'Docker'].map(s => (
-                    <span key={s} className="px-4 py-2 rounded-xl bg-[#151518] border border-[#ffffff11] text-sm text-gray-400">{s}</span>
-                  ))}
-                </div>
-              </div>
+            <div className="flex items-center gap-3 mb-5">
+              <div className="p-2 rounded-lg bg-[#ff71ce11] text-[#ff71ce]"><Code2 size={18} /></div>
+              <h3 className="text-base font-semibold text-white">Frontend</h3>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {['React', 'Next.js', 'TypeScript', 'JavaScript', 'Tailwind', 'Framer Motion', 'Three.js', 'D3.js', 'GSAP'].map(s => (
+                <span key={s} className="px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.07] text-xs text-gray-400 font-medium">{s}</span>
+              ))}
             </div>
           </div>
-          <div className="bg-[#151518] rounded-3xl p-12 border border-[#ffffff11] flex flex-col justify-center">
-            <Terminal className="text-[#05ffa1] mb-6" size={32} />
-            <div className="font-mono text-sm space-y-4">
-              <p className="text-gray-500"># Current status</p>
-              <p className="text-[#05ffa1]">$ sosush --status</p>
-              <p className="text-white">{" >> "} Trying to take AI's job</p>
-              <p className="text-white">{" >> "} Laughing at bad 404 jokes</p>
-              <p className="text-white">{" >> "} High on caffeine</p>
-              <div className="pt-8">
-                <p className="text-gray-500"># Connect</p>
-                <p className="text-[#ff71ce]">$ sosush --socials</p>
-                <div className="flex gap-4 mt-4">
-                  <a href="https://github.com/sosush" className="p-2 rounded-lg bg-[#ffffff05] hover:text-[#01cdfe] transition-colors"><GithubIcon size={20} /></a>
-                  <a href="https://linkedin.com/in/sohini-banerjee-12882731b" className="p-2 rounded-lg bg-[#ffffff05] hover:text-[#05ffa1] transition-colors"><LinkedinIcon size={20} /></a>
-                  <a href="https://leetcode.com/u/sb_1315/" className="p-2 rounded-lg bg-[#ffffff05] hover:text-[#fffb96] transition-colors"><Code2 size={20} /></a>
-                </div>
-              </div>
+          <div>
+            <div className="flex items-center gap-3 mb-5">
+              <div className="p-2 rounded-lg bg-[#01cdfe11] text-[#01cdfe]"><Cpu size={18} /></div>
+              <h3 className="text-base font-semibold text-white">Backend & ML</h3>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {['Python', 'FastAPI', 'Node.js', 'PyTorch', 'PostgreSQL', 'Redis', 'Docker', 'Supabase', 'LangChain', 'ONNX'].map(s => (
+                <span key={s} className="px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.07] text-xs text-gray-400 font-medium">{s}</span>
+              ))}
             </div>
           </div>
         </div>
-      </Section>
+      </section>
 
       {/* Footer / Contact */}
-      <footer id="contact" className="py-40 px-6 md:px-20 border-t border-[#ffffff05] relative overflow-hidden">
+      <footer id="contact" className="py-32 px-6 md:px-24 lg:px-32 border-t border-white/[0.05] relative overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#ff71ce] opacity-5 blur-[150px]" />
-          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#01cdfe] opacity-5 blur-[150px]" />
+          <div className="absolute top-10 left-1/4 w-80 h-80 bg-[#ff71ce] opacity-[0.04] blur-[120px] rounded-full" />
+          <div className="absolute bottom-10 right-1/4 w-64 h-64 bg-[#01cdfe] opacity-[0.04] blur-[100px] rounded-full" />
         </div>
         
-        <div className="max-w-7xl mx-auto text-center relative z-10">
+        <div className="max-w-screen-xl mx-auto relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            className="mb-16"
+            className="max-w-lg"
           >
-            <h2 className="text-5xl md:text-7xl font-black font-display tracking-tighter mb-8">
-              LET'S <span className="text-[#ff71ce]">CHAT</span>.
+            <p className="text-[#ff71ce] text-xs font-semibold uppercase tracking-[0.3em] mb-6">Get in touch</p>
+            <h2 className="text-4xl md:text-5xl font-black font-display tracking-tight mb-5 text-white">
+              Let's build something together.
             </h2>
-            <p className="text-gray-400 text-lg md:text-xl max-w-xl mx-auto leading-relaxed">
-              Have a project in mind or just want to talk about AI? 
-              I'm always down for a cup of coffee with a good conversation.
+            <p className="text-gray-500 text-base leading-relaxed mb-3">
+              Open to research collaborations, interesting problems, and good conversations about AI and security.
+            </p>
+            <p className="text-gray-600 text-sm font-mono mb-8">
+              son20apakhi05@gmail.com · (+91) 98740-38011
             </p>
           </motion.div>
 
-          <div className="flex flex-col md:flex-row justify-center items-center gap-6">
+          <div className="flex flex-wrap gap-4 items-center">
             <motion.a
-              href="mailto:sohinibanerjee1315@gmail.com"
-              whileHover={{ y: -5 }}
-              whileTap={{ scale: 0.98 }}
-              className="px-8 py-4 bg-[#ff71ce] text-black font-bold rounded-xl shadow-lg flex items-center gap-3 transition-all"
+              href="mailto:son20apakhi05@gmail.com"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className="flex items-center gap-2.5 px-6 py-3 bg-[#ff71ce] text-black text-sm font-bold rounded-xl shadow-[0_0_25px_rgba(255,113,206,0.3)] hover:shadow-[0_0_40px_rgba(255,113,206,0.45)] transition-shadow"
             >
-              <Mail size={20} /> SAY HELLO
+              <Mail size={16} /> Say hello
             </motion.a>
-            <div className="flex gap-4">
-              <a href="https://github.com/sosush" className="p-4 rounded-xl bg-[#151518] border border-[#ffffff11] hover:text-[#01cdfe] transition-colors"><GithubIcon size={20} /></a>
-              <a href="https://www.linkedin.com/in/sohini-banerjee-12882731b/" className="p-4 rounded-xl bg-[#151518] border border-[#ffffff11] hover:text-[#05ffa1] transition-colors"><LinkedinIcon size={20} /></a>
-            </div>
+            <a href="https://github.com/sosush" className="p-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-gray-400 hover:text-white hover:border-white/20 transition-all"><GithubIcon size={18} /></a>
+            <a href="https://linkedin.com/in/sosush" className="p-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-gray-400 hover:text-white hover:border-white/20 transition-all"><LinkedinIcon size={18} /></a>
           </div>
+
+          <p className="text-gray-700 text-xs mt-16">© 2025 Sohini Banerjee. Built with React + Three.js.</p>
         </div>
-
-
       </footer>
     </div>
   );

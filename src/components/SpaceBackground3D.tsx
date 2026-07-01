@@ -65,16 +65,22 @@ function Galaxy({ position, color, size = 1, rotationSpeed = 0.02 }) {
         <PointMaterial
           transparent
           color={color}
-          size={0.04}
+          size={0.09}
+          opacity={1}
           sizeAttenuation={true}
           depthWrite={false}
           blending={THREE.AdditiveBlending}
         />
       </Points>
-      {/* Intense core glow */}
-      <mesh scale={1.2}>
+      {/* Bright core glow */}
+      <mesh scale={1.5}>
         <sphereGeometry args={[0.5, 16, 16]} />
-        <meshBasicMaterial color={color} transparent opacity={0.8} />
+        <meshBasicMaterial color={color} transparent opacity={0.95} />
+      </mesh>
+      {/* Outer halo */}
+      <mesh scale={3}>
+        <sphereGeometry args={[0.5, 16, 16]} />
+        <meshBasicMaterial color={color} transparent opacity={0.15} />
       </mesh>
     </group>
   );
@@ -106,9 +112,11 @@ function StarClusters() {
       <PointMaterial
         transparent
         color="#ffffff"
-        size={0.02}
+        size={0.055}
+        opacity={0.95}
         sizeAttenuation={true}
         depthWrite={false}
+        blending={THREE.AdditiveBlending}
       />
     </Points>
   );
@@ -151,7 +159,7 @@ function Scene({ moving = true }: { moving?: boolean }) {
 
   return (
     <group ref={groupRef}>
-      <Stars radius={100} depth={50} count={5000} factor={4} saturation={0.5} fade speed={0} />
+      <Stars radius={100} depth={60} count={9000} factor={6} saturation={0.8} fade speed={0.5} />
       
       {/* URSA MAJOR - Top Right Side */}
       <group position={[15, 8, -5]} rotation={[0, 0, Math.PI / 6]} scale={0.6}>
@@ -185,7 +193,7 @@ export default function SpaceBackground3D({ moving = true }: { moving?: boolean 
         eventPrefix="client"
       >
         <color attach="background" args={['#050507']} />
-        <ambientLight intensity={0.5} />
+        <ambientLight intensity={1.2} />
         <Scene moving={moving} />
       </Canvas>
     </div>
