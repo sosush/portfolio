@@ -1223,7 +1223,12 @@ const ResearchSection = ({ onKnowMore }: { onKnowMore: (r: any) => void }) => {
   );
 };
 
-const JourneySection = () => {
+const CERTIFICATIONS = [
+  { title: "Research Internship", issuer: "VIT Chennai (SRIP 2025)", link: "/certificates/reserach-internship.pdf" },
+  { title: "Web Developer at Startup", issuer: "Hackfinity", link: "/certificates/web_developer_hackfinity.pdf" }
+];
+
+const JourneySection: React.FC<{ certifications: Array<{ title: string; issuer: string; link: string }> }> = ({ certifications }) => {
   return (
     <Section id="journey">
       <div className="mb-16">
@@ -1233,7 +1238,7 @@ const JourneySection = () => {
         <p className="text-gray-500 mt-4">Academic foundation and hands-on industry experience.</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <div className="grid grid-cols-1 xl:grid-cols-[1.05fr,0.95fr,0.8fr] gap-8">
         {/* Left Column: Education */}
         <motion.div 
           initial={{ opacity: 0, x: -50 }}
@@ -1282,7 +1287,7 @@ const JourneySection = () => {
           </div>
         </motion.div>
 
-        {/* Right Column: Experience */}
+        {/* Middle Column: Experience */}
         <motion.div 
           initial={{ opacity: 0, x: 50 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -1338,6 +1343,43 @@ const JourneySection = () => {
                 </li>
               </ul>
             </div>
+          </div>
+        </motion.div>
+
+        {/* Right Column: Certifications */}
+        <motion.div
+          initial={{ opacity: 0, x: 50 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, delay: 0.1 }}
+          className="bg-[#151518] border border-[#ffffff11] p-8 md:p-10 rounded-[2.5rem] relative overflow-hidden"
+        >
+          <div className="absolute top-0 right-0 w-32 h-32 blur-3xl opacity-10 bg-[#b967ff]" />
+          <div className="flex items-center gap-4 mb-8">
+            <div className="p-3.5 rounded-2xl bg-[#b967ff11] text-[#b967ff]">
+              <Award size={24} />
+            </div>
+            <h3 className="text-2xl md:text-3xl font-black font-display tracking-tight text-white">CERTIFICATIONS</h3>
+          </div>
+
+          <div className="space-y-3">
+            {certifications.map((cert, i) => (
+              <a
+                key={i}
+                href={cert.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] p-4 transition-all hover:border-[#b967ff]/30 hover:bg-white/[0.05]"
+              >
+                <div>
+                  <h4 className="text-sm font-semibold text-white">{cert.title}</h4>
+                  <p className="mt-1 text-xs text-gray-500">{cert.issuer}</p>
+                </div>
+                <div className="rounded-lg bg-white/[0.04] p-2 text-gray-500 transition-all group-hover:bg-[#b967ff] group-hover:text-black">
+                  <ExternalLink size={15} />
+                </div>
+              </a>
+            ))}
           </div>
         </motion.div>
       </div>
@@ -1457,141 +1499,72 @@ const SocialFeedSection: React.FC = () => {
 };
 
 // ── Project Deepdive Section ──────────────────────────────────────────────────
-const CAROUSEL_AUTO_ROTATE_MS = 4500;
-
 const ProjectDeepdiveSection: React.FC<{ onRead: (blog: BlogPost) => void }> = ({ onRead }) => {
-  const [activeIndex, setActiveIndex] = useState(() =>
-    Math.min(2, Math.max(0, blogPosts.length - 1))
-  );
-  const [isHovered, setIsHovered] = useState(false);
-
-  const rotateCarousel = useCallback((direction: 'next' | 'prev') => {
-    if (direction === 'next') {
-      setActiveIndex((prev) => (prev + 1) % blogPosts.length);
-    } else {
-      setActiveIndex((prev) => (prev - 1 + blogPosts.length) % blogPosts.length);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (isHovered || blogPosts.length <= 1) return;
-
-    const interval = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % blogPosts.length);
-    }, CAROUSEL_AUTO_ROTATE_MS);
-
-    return () => clearInterval(interval);
-  }, [isHovered]);
+  const [isPaused, setIsPaused] = useState(false);
+  const stripPosts = useMemo(() => [...blogPosts, ...blogPosts], []);
 
   return (
     <Section id="deepdive" className="relative overflow-hidden">
-      <div className="mb-16">
+      <div className="mb-12 md:mb-16">
         <p className="text-[#05ffa1] text-xs font-semibold uppercase tracking-[0.3em] mb-4">Deepdives</p>
         <h2 className="text-3xl md:text-5xl font-black font-display tracking-tight text-white uppercase">
           Project <span className="text-[#01cdfe]">Deepdive</span>
         </h2>
-        <p className="text-gray-500 mt-4 text-base">In-depth technical writeups and case studies on engineering and security research.</p>
+        <p className="text-gray-500 mt-4 text-base">A continuous stream of technical writeups, moving like a film strip across the page.</p>
       </div>
 
-      {/* Revolving Carousel Area */}
       <div
-        className="relative h-[480px] w-full flex items-center justify-center overflow-hidden"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        className="relative w-full overflow-hidden py-4 md:py-6"
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
       >
-        <div className="relative w-full max-w-4xl h-full flex items-center justify-center">
-          {blogPosts.map((blog, idx) => {
-            let offset = idx - activeIndex;
-            if (offset < -2) offset += blogPosts.length;
-            if (offset > 2) offset -= blogPosts.length;
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(1,205,254,0.12),transparent_70%)]" />
+        <div
+          className="flex w-max gap-4 md:gap-5 will-change-transform"
+          style={{
+            animation: 'scrollTape 20s linear infinite',
+            animationPlayState: isPaused ? 'paused' : 'running',
+          }}
+        >
+          {stripPosts.map((blog, idx) => (
+            <div
+              key={`${blog.slug}-${idx}`}
+              className="group h-[280px] md:h-[320px] w-[280px] md:w-[320px] shrink-0 rounded-[28px] border border-white/10 bg-[#111113]/90 p-6 md:p-7 shadow-[0_18px_60px_rgba(0,0,0,0.35)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-[#01cdfe]/30 hover:shadow-[0_24px_90px_rgba(1,205,254,0.16)]"
+              onClick={() => onRead(blog)}
+            >
+              <div className="flex items-center justify-between mb-5">
+                <span className="text-[10px] font-bold uppercase tracking-[0.24em] text-gray-500">{blog.date}</span>
+                <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] text-gray-400">{blog.readTime}</span>
+              </div>
 
-            const isActive = offset === 0;
-            const isVisible = Math.abs(offset) <= 2;
+              <div className="mb-4 h-2 w-full rounded-full bg-white/10">
+                <div className="h-2 w-2/3 rounded-full" style={{ backgroundColor: blog.color }} />
+              </div>
 
-            if (!isVisible) return null;
+              <h3 className="text-lg md:text-xl font-black leading-tight text-white" style={{ color: blog.color }}>
+                {blog.title}
+              </h3>
+              <p className="mt-3 text-sm leading-relaxed text-gray-400 line-clamp-4">
+                {blog.preview}
+              </p>
 
-            const rotateY = offset * 32;
-            const translateZ = isActive ? 0 : -220;
-            const translateX = offset * 280;
-            const scale = isActive ? 1.05 : 0.85;
-            const opacity = isActive ? 1 : 0.4;
-            const zIndex = 10 - Math.abs(offset);
-
-            return (
-              <motion.div
-                key={blog.slug}
-                animate={{
-                  x: translateX,
-                  scale: scale,
-                  opacity: opacity,
-                  z: translateZ,
-                  rotateY: rotateY,
-                }}
-                transition={{ type: "spring", stiffness: 260, damping: 26 }}
-                style={{
-                  position: 'absolute',
-                  zIndex: zIndex,
-                  transformStyle: 'preserve-3d',
-                }}
-                className={`w-[320px] md:w-[380px] h-[360px] bg-[#111113]/90 backdrop-blur-md border border-white/[0.08] p-8 rounded-3xl flex flex-col justify-between cursor-pointer transition-all ${
-                  isActive ? 'border-[#01cdfe]/40 shadow-[0_8px_32px_rgba(1,205,254,0.1)]' : 'hover:border-white/20'
-                }`}
-                onClick={() => {
-                  if (isActive) {
-                    onRead(blog);
-                  } else {
-                    setActiveIndex(idx);
-                  }
-                }}
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-6">
-                    <span className="text-[10px] font-bold text-gray-500 font-mono">{blog.date}</span>
-                    <span className="text-[10px] text-gray-500 px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10">{blog.readTime}</span>
-                  </div>
-                  <h3 className="text-xl md:text-2xl font-black mb-4 tracking-tight leading-tight text-white" style={{ color: isActive ? blog.color : '#fff' }}>
-                    {blog.title}
-                  </h3>
-                  <p className="text-gray-400 text-sm leading-relaxed line-clamp-4">
-                    {blog.preview}
-                  </p>
-                </div>
-
-                <div className="flex items-center justify-between pt-4 border-t border-white/[0.06]">
-                  <span className="text-[10px] uppercase font-bold tracking-widest text-[#01cdfe]">Technical Post</span>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onRead(blog);
-                    }}
-                    className="flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-xl bg-white text-black hover:bg-white/90 transition-colors"
-                  >
-                    Read Post <ArrowRight size={13} />
-                  </button>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-
-        {/* Carousel controls */}
-        <div className="absolute bottom-2 flex gap-4 z-20">
-          <button
-            onClick={() => rotateCarousel('prev')}
-            className="w-11 h-11 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-white/10 hover:border-white/20 active:scale-95 transition-all"
-            aria-label="Previous Post"
-          >
-            ←
-          </button>
-          <button
-            onClick={() => rotateCarousel('next')}
-            className="w-11 h-11 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-white/10 hover:border-white/20 active:scale-95 transition-all"
-            aria-label="Next Post"
-          >
-            →
-          </button>
+              <div className="mt-6 flex items-center justify-between border-t border-white/10 pt-4">
+                <span className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#05ffa1]">Film Strip</span>
+                <span className="flex items-center gap-1.5 text-xs font-semibold text-white transition-colors group-hover:text-[#01cdfe]">
+                  Read <ArrowRight size={13} />
+                </span>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
+
+      <style>{`
+        @keyframes scrollTape {
+          from { transform: translateX(0); }
+          to { transform: translateX(-50%); }
+        }
+      `}</style>
     </Section>
   );
 };
@@ -1740,15 +1713,10 @@ export default function App() {
     }
   ];
 
-  const certificates = [
-    { title: "Research Internship", issuer: "VIT Chennai (SRIP 2025)", link: "/certificates/reserach-internship.pdf" },
-    { title: "Web Developer at Startup", issuer: "Hackfinity", link: "/certificates/web_developer_hackfinity.pdf" }
-  ];
-
   return (
-    <div className="relative selection:bg-[#ff71ce] selection:text-black">
+    <div className="relative selection:bg-[#ff71ce] selection:text-black" style={{ WebkitTapHighlightColor: 'transparent' }}>
       <SpaceBackground3D moving={isBgMoving} />
-      
+
       {/* ADHD Toggle Button */}
       <div className="fixed bottom-6 left-6 z-50 group">
         <button
@@ -1939,7 +1907,7 @@ export default function App() {
       </Section>
 
       {/* Journey Section */}
-      <JourneySection />
+      <JourneySection certifications={CERTIFICATIONS} />
 
       {/* Work Section */}
       <Section id="work">
@@ -1973,43 +1941,6 @@ export default function App() {
 
       {/* Social Media Feed Section */}
       <SocialFeedSection />
-
-      {/* Certificates Section */}
-      <section id="certificates" className="py-16 px-6 md:px-24 lg:px-32 max-w-screen-2xl mx-auto w-full">
-        <div className="max-w-2xl">
-          <p className="text-[#b967ff] text-xs font-semibold uppercase tracking-[0.3em] mb-4">Recognition</p>
-          <h2 className="text-3xl font-black font-display tracking-tight text-white mb-8">
-            Certifications
-          </h2>
-          <div className="space-y-3">
-            {certificates.map((cert, i) => (
-              <motion.div 
-                key={i}
-                whileHover={{ x: 4 }}
-                className="flex items-center justify-between p-5 bg-white/[0.03] border border-white/[0.07] rounded-xl group hover:border-white/[0.14] hover:bg-white/[0.05] transition-all"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="p-2 rounded-lg bg-[#b967ff11] text-[#b967ff]">
-                    <Award size={18} />
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-semibold text-white">{cert.title}</h4>
-                    <p className="text-xs text-gray-500 mt-0.5">{cert.issuer}</p>
-                  </div>
-                </div>
-                <a 
-                  href={cert.link} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="p-2 rounded-lg bg-white/[0.04] hover:bg-[#b967ff] hover:text-black text-gray-500 hover:text-black transition-all"
-                >
-                  <ExternalLink size={15} />
-                </a>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Skills Section */}
       <section id="skills" className="py-16 px-6 md:px-24 lg:px-32 max-w-screen-2xl mx-auto w-full">

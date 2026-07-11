@@ -18,3 +18,11 @@ By studying input space perturbation boundaries and feature drift, we map out st
 1. **Payload obfuscation** — encoding tricks that evade signature matching
 2. **Feature drift** — gradual shifts that stay below detection thresholds
 3. **Adversarial examples** — crafted inputs that fool ML classifiers
+
+## Example Image Embedding
+
+Use a local image by placing it in the public folder and referencing it like this:
+
+![Dummy architecture sketch](/images/dummy-post-graphic.svg)
+
+This keeps the markdown portable and easy to preview in the browser.

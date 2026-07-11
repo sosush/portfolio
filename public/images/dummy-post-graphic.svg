@@ -1,0 +1,16 @@
+<svg width="960" height="540" viewBox="0 0 960 540" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="960" height="540" rx="28" fill="#05070D"/>
+  <rect x="70" y="86" width="820" height="368" rx="24" fill="#0F172A" stroke="#01cdfe" stroke-width="2"/>
+  <rect x="118" y="140" width="252" height="150" rx="18" fill="#111827" stroke="#ff71ce" stroke-width="2"/>
+  <rect x="430" y="140" width="394" height="150" rx="18" fill="#111827" stroke="#05ffa1" stroke-width="2"/>
+  <rect x="174" y="324" width="612" height="74" rx="16" fill="#111827" stroke="#fffb96" stroke-width="2"/>
+  <circle cx="232" cy="215" r="44" fill="#01cdfe" fill-opacity="0.25" stroke="#01cdfe" stroke-width="3"/>
+  <circle cx="620" cy="215" r="44" fill="#ff71ce" fill-opacity="0.25" stroke="#ff71ce" stroke-width="3"/>
+  <path d="M276 215H576" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+  <path d="M576 215L544 182" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+  <path d="M576 215L544 248" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+  <rect x="160" y="96" width="124" height="22" rx="11" fill="#01cdfe" fill-opacity="0.8"/>
+  <rect x="462" y="96" width="164" height="22" rx="11" fill="#05ffa1" fill-opacity="0.75"/>
+  <text x="186" y="372" fill="#F9FAFB" font-family="Arial, sans-serif" font-size="26" font-weight="600">Markdown image example</text>
+  <text x="182" y="405" fill="#9CA3AF" font-family="Arial, sans-serif" font-size="18">Drop a local image in public/images and reference it in your post.</text>
+</svg>
