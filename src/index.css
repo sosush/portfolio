@@ -10,6 +10,15 @@
     @apply bg-[#0a0a0c] text-[#e0e0e0] overflow-x-hidden;
   }
 
+  /* Let the comet cursor take over on desktop-width viewports with a real
+     mouse. Touch devices and mobile-width viewports keep their native
+     cursor/tap behavior untouched. */
+  @media (pointer: fine) and (min-width: 768px) {
+    * {
+      cursor: none !important;
+    }
+  }
+
   /* Custom Scrollbar */
   ::-webkit-scrollbar {
     width: 8px;

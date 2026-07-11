@@ -700,91 +700,182 @@ const ProjectCard: React.FC<{
   </motion.div>
 );
 
-const ConstellationCursor = () => {
+// Comet cursor: a soft glowing head that eases toward the pointer, leaving a
+// short trail of fading sparks behind it, with a light aura burst on click.
+const CometCursor = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const mouse = useRef({ x: 0, y: 0 });
-  const trail = useRef<{ x: number; y: number; age: number; maxAge: number; vx: number; vy: number; color: string }[]>([]);
 
   useEffect(() => {
+    // Only take over the cursor on real desktop viewports with a mouse.
+    // Touch devices, and narrow/mobile-width viewports (even ones that
+    // technically report a fine pointer, e.g. some devtools emulation),
+    // keep their native cursor/tap behavior untouched.
+    const pointerFine = window.matchMedia('(pointer: fine)').matches;
+    if (!pointerFine) return;
+
+    const MOBILE_BREAKPOINT = 768;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    const COLORS = ['#ff71ce', '#01cdfe', '#b967ff'];
+    const pick = () => COLORS[Math.floor(Math.random() * COLORS.length)];
+
+    let dpr = Math.min(window.devicePixelRatio || 1, 2);
+    let active = window.innerWidth >= MOBILE_BREAKPOINT;
     const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      canvas.style.width = `${window.innerWidth}px`;
+      canvas.style.height = `${window.innerHeight}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      // Re-check on every resize so shrinking the window down to a mobile
+      // width (or rotating a device) turns the effect off immediately.
+      active = window.innerWidth >= MOBILE_BREAKPOINT;
+      if (!active) ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
     };
+    resize();
 
-    const handleMouseMove = (e: MouseEvent) => {
-      mouse.current.x = e.clientX;
-      mouse.current.y = e.clientY;
+    const target = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+    const head = { x: target.x, y: target.y };
+    let lastTrailX = head.x;
+    let lastTrailY = head.y;
+    let visible = false;
 
-      for (let i = 0; i < 3; i++) {
-        trail.current.push({
-          x: e.clientX,
-          y: e.clientY,
-          age: 0,
-          maxAge: 35 + Math.random() * 25,
-          vx: (Math.random() - 0.5) * 1.5,
-          vy: (Math.random() - 0.5) * 1.5 - 0.4,
-          color: Math.random() > 0.5 ? '#ff71ce' : '#01cdfe'
-        });
-      }
+    type Spark = { x: number; y: number; age: number; maxAge: number; size: number; color: string };
+    type Burst = { x: number; y: number; age: number; maxAge: number; color: string };
+    let sparks: Spark[] = [];
+    let bursts: Burst[] = [];
+
+    const handleMove = (e: MouseEvent) => {
+      if (!active) return;
+      target.x = e.clientX;
+      target.y = e.clientY;
+      visible = true;
     };
-
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      trail.current.forEach((p) => {
-        p.age++;
-        p.x += p.vx;
-        p.y += p.vy;
-
-        p.vx *= 0.97;
-        p.vy *= 0.97;
-
-        const ratio = 1 - p.age / p.maxAge;
-        if (ratio <= 0) return;
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, ratio * 3.5, 0, Math.PI * 2);
-        ctx.fillStyle = p.color;
-        ctx.globalAlpha = ratio * 0.75;
-        ctx.fill();
-        ctx.globalAlpha = 1.0;
-      });
-
-      trail.current = trail.current.filter(p => p.age < p.maxAge);
-
-      const headGlow = ctx.createRadialGradient(
-        mouse.current.x, mouse.current.y, 0,
-        mouse.current.x, mouse.current.y, 30
-      );
-      headGlow.addColorStop(0, 'rgba(255, 113, 206, 0.45)');
-      headGlow.addColorStop(0.5, 'rgba(1, 205, 254, 0.2)');
-      headGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
-      
-      ctx.beginPath();
-      ctx.arc(mouse.current.x, mouse.current.y, 30, 0, Math.PI * 2);
-      ctx.fillStyle = headGlow;
-      ctx.fill();
-
-      requestAnimationFrame(animate);
+    const handleLeave = () => { visible = false; };
+    const handleClick = (e: MouseEvent) => {
+      if (!active) return;
+      bursts.push({ x: e.clientX, y: e.clientY, age: 0, maxAge: 46, color: pick() });
     };
 
     window.addEventListener('resize', resize);
-    window.addEventListener('mousemove', handleMouseMove);
-    resize();
-    animate();
+    window.addEventListener('mousemove', handleMove, { passive: true });
+    window.addEventListener('mousedown', handleClick);
+    document.addEventListener('mouseleave', handleLeave);
+
+    let raf = 0;
+    const animate = () => {
+      ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+      if (!active) {
+        raf = requestAnimationFrame(animate);
+        return;
+      }
+
+      // Ease the comet head toward the real pointer position — this lag is
+      // what gives it a "trailing through space" feel rather than snapping.
+      head.x += (target.x - head.x) * 0.22;
+      head.y += (target.y - head.y) * 0.22;
+
+      const dx = head.x - lastTrailX;
+      const dy = head.y - lastTrailY;
+      const dist = Math.hypot(dx, dy);
+
+      if (visible && dist > 2) {
+        const steps = Math.min(Math.max(Math.floor(dist / 4), 1), 5);
+        for (let i = 1; i <= steps; i++) {
+          const t = i / steps;
+          sparks.push({
+            x: lastTrailX + dx * t,
+            y: lastTrailY + dy * t,
+            age: 0,
+            maxAge: 24 + Math.random() * 14,
+            size: 1.4 + Math.random() * 1.6,
+            color: pick(),
+          });
+        }
+        lastTrailX = head.x;
+        lastTrailY = head.y;
+      }
+
+      // Trail sparks
+      sparks.forEach((p) => {
+        p.age++;
+        const ratio = 1 - p.age / p.maxAge;
+        if (ratio <= 0) return;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, Math.max(p.size * ratio, 0.15), 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = ratio * 0.6;
+        ctx.fill();
+      });
+      ctx.globalAlpha = 1;
+      sparks = sparks.filter((p) => p.age < p.maxAge);
+
+      // Click aura bursts
+      bursts.forEach((b) => {
+        b.age++;
+        const ratio = 1 - b.age / b.maxAge;
+        if (ratio <= 0) return;
+        const eased = 1 - Math.pow(1 - ratio, 2);
+        const radius = 4 + (1 - ratio) * 42;
+
+        const glow = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, radius);
+        glow.addColorStop(0, `${b.color}66`);
+        glow.addColorStop(0.55, `${b.color}26`);
+        glow.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, radius, 0, Math.PI * 2);
+        ctx.fillStyle = glow;
+        ctx.globalAlpha = eased;
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, radius * 0.7, 0, Math.PI * 2);
+        ctx.strokeStyle = b.color;
+        ctx.lineWidth = 1.1;
+        ctx.globalAlpha = eased * 0.55;
+        ctx.stroke();
+      });
+      ctx.globalAlpha = 1;
+      bursts = bursts.filter((b) => b.age < b.maxAge);
+
+      // Comet head: soft glow plus a bright white core
+      if (visible) {
+        const headGlow = ctx.createRadialGradient(head.x, head.y, 0, head.x, head.y, 16);
+        headGlow.addColorStop(0, 'rgba(255,255,255,0.9)');
+        headGlow.addColorStop(0.3, 'rgba(255,113,206,0.5)');
+        headGlow.addColorStop(0.65, 'rgba(1,205,254,0.22)');
+        headGlow.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.beginPath();
+        ctx.arc(head.x, head.y, 16, 0, Math.PI * 2);
+        ctx.fillStyle = headGlow;
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(head.x, head.y, 2.4, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+      }
+
+      raf = requestAnimationFrame(animate);
+    };
+    raf = requestAnimationFrame(animate);
 
     return () => {
+      cancelAnimationFrame(raf);
       window.removeEventListener('resize', resize);
-      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mousemove', handleMove);
+      window.removeEventListener('mousedown', handleClick);
+      document.removeEventListener('mouseleave', handleLeave);
     };
   }, []);
 
-  return <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-[100]" />;
+  return <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-[9999]" />;
 };
 
 const CustomLogo = () => (
@@ -1715,6 +1806,7 @@ export default function App() {
 
   return (
     <div className="relative selection:bg-[#ff71ce] selection:text-black" style={{ WebkitTapHighlightColor: 'transparent' }}>
+      <CometCursor />
       <SpaceBackground3D moving={isBgMoving} />
 
       {/* ADHD Toggle Button */}
