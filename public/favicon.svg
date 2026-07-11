@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <style>
+      @keyframes drawHeart {
+        0%   { stroke-dashoffset: 120; opacity: 0.3; }
+        50%  { stroke-dashoffset: 0;   opacity: 1; }
+        75%  { stroke-dashoffset: 0;   opacity: 1; }
+        100% { stroke-dashoffset: 120; opacity: 0.3; }
+      }
+      @keyframes pulseDot {
+        0%, 100% { r: 2; opacity: 0.4; }
+        50%       { r: 3; opacity: 1; }
+      }
+      .heart-path {
+        stroke-dasharray: 120;
+        stroke-dashoffset: 120;
+        animation: drawHeart 3s ease-in-out infinite;
+      }
+      .cyan-dot {
+        animation: pulseDot 2.5s ease-in-out infinite;
+      }
+    </style>
+    <radialGradient id="bg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1a1a1f"/>
+      <stop offset="100%" stop-color="#0a0a0d"/>
+    </radialGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="1.5" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Background circle -->
+  <circle cx="32" cy="32" r="31" fill="url(#bg)" stroke="#ffffff18" stroke-width="1"/>
+
+  <!-- Pink heart outline, animated draw -->
+  <path
+    class="heart-path"
+    d="M32 50 C32 50 12 38 12 24 C12 17 17 12 24 12 C27.5 12 30.5 13.5 32 16 C33.5 13.5 36.5 12 40 12 C47 12 52 17 52 24 C52 38 32 50 32 50 Z"
+    fill="none"
+    stroke="#ff71ce"
+    stroke-width="3"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    filter="url(#glow)"
+  />
+
+  <!-- Cyan dot at the top of the heart -->
+  <circle class="cyan-dot" cx="32" cy="16" r="2.5" fill="#01cdfe"/>
+</svg>

@@ -57,6 +57,30 @@ const LinkedinIcon = ({ size = 24, className = "" }: { size?: number, className?
     <circle cx="4" cy="4" r="2" />
   </svg>
 );
+
+const TwitterXIcon = ({ size = 24, className = "" }: { size?: number, className?: string }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    className={className}
+  >
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+);
+
+const BlueskyIcon = ({ size = 24, className = "" }: { size?: number, className?: string }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    className={className}
+  >
+    <path d="M12 10.8c-1.087-2.114-4.046-6.053-6.798-7.995C2.566.944 1.561 1.266.902 1.565.139 1.908 0 3.08 0 3.768c0 .69.378 5.65.624 6.479.815 2.736 3.713 3.66 6.383 3.364.136-.02.275-.039.415-.056-.138.022-.276.04-.415.056-3.912.58-7.387 2.005-2.83 7.078 5.013 5.19 6.87-1.113 7.823-4.308.953 3.195 2.05 9.271 7.733 4.308 4.267-4.308 1.172-6.498-2.74-7.078a8.741 8.741 0 0 1-.415-.056c.14.017.279.036.415.056 2.67.297 5.568-.628 6.383-3.364.246-.828.624-5.79.624-6.478 0-.69-.139-1.861-.902-2.204-.659-.298-1.664-.62-4.3 1.24C16.046 4.748 13.087 8.687 12 10.8z" />
+  </svg>
+);
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Float, Sphere, MeshDistortMaterial, MeshWobbleMaterial, Torus, Stars, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
@@ -102,7 +126,7 @@ const Section: React.FC<{ children: React.ReactNode; id?: string; className?: st
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true, margin: "-80px" }}
     transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-    className={`min-h-screen flex flex-col justify-center py-24 px-6 md:px-24 lg:px-32 max-w-screen-xl mx-auto w-full ${className}`}
+    className={`min-h-screen flex flex-col justify-center py-24 px-6 md:px-24 lg:px-32 max-w-screen-2xl mx-auto w-full ${className}`}
   >
     {children}
   </motion.section>
@@ -677,7 +701,7 @@ const ProjectCard: React.FC<{
 const ConstellationCursor = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouse = useRef({ x: 0, y: 0 });
-  const points = useRef<{ x: number; y: number; vx: number; vy: number; size: number }[]>([]);
+  const trail = useRef<{ x: number; y: number; age: number; maxAge: number; vx: number; vy: number; color: string }[]>([]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -690,80 +714,66 @@ const ConstellationCursor = () => {
       canvas.height = window.innerHeight;
     };
 
-    const initPoints = () => {
-      points.current = Array.from({ length: 50 }, () => ({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
-        size: Math.random() * 2 + 1
-      }));
+    const handleMouseMove = (e: MouseEvent) => {
+      mouse.current.x = e.clientX;
+      mouse.current.y = e.clientY;
+
+      for (let i = 0; i < 3; i++) {
+        trail.current.push({
+          x: e.clientX,
+          y: e.clientY,
+          age: 0,
+          maxAge: 35 + Math.random() * 25,
+          vx: (Math.random() - 0.5) * 1.5,
+          vy: (Math.random() - 0.5) * 1.5 - 0.4,
+          color: Math.random() > 0.5 ? '#ff71ce' : '#01cdfe'
+        });
+      }
     };
 
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      points.current.forEach((p, i) => {
+
+      trail.current.forEach((p) => {
+        p.age++;
         p.x += p.vx;
         p.y += p.vy;
 
-        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+        p.vx *= 0.97;
+        p.vy *= 0.97;
 
-        // Attraction to mouse
-        const dx = mouse.current.x - p.x;
-        const dy = mouse.current.y - p.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 200) {
-          p.vx += dx * 0.0001;
-          p.vy += dy * 0.0001;
-        }
+        const ratio = 1 - p.age / p.maxAge;
+        if (ratio <= 0) return;
 
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+        ctx.arc(p.x, p.y, ratio * 3.5, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = ratio * 0.75;
         ctx.fill();
-
-        // Connect points
-        for (let j = i + 1; j < points.current.length; j++) {
-          const p2 = points.current[j];
-          const dx2 = p.x - p2.x;
-          const dy2 = p.y - p2.y;
-          const dist2 = Math.sqrt(dx2 * dx2 + dy2 * dy2);
-
-          if (dist2 < 100) {
-            ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = `rgba(255, 255, 255, ${0.2 * (1 - dist2 / 100)})`;
-            ctx.lineWidth = 0.5;
-            ctx.stroke();
-          }
-        }
-
-        // Connect to mouse
-        if (dist < 150) {
-          ctx.beginPath();
-          ctx.moveTo(p.x, p.y);
-          ctx.lineTo(mouse.current.x, mouse.current.y);
-          ctx.strokeStyle = `rgba(255, 113, 206, ${0.4 * (1 - dist / 150)})`;
-          ctx.lineWidth = 1;
-          ctx.stroke();
-        }
+        ctx.globalAlpha = 1.0;
       });
 
-      requestAnimationFrame(animate);
-    };
+      trail.current = trail.current.filter(p => p.age < p.maxAge);
 
-    const handleMouseMove = (e: MouseEvent) => {
-      mouse.current.x = e.clientX;
-      mouse.current.y = e.clientY;
+      const headGlow = ctx.createRadialGradient(
+        mouse.current.x, mouse.current.y, 0,
+        mouse.current.x, mouse.current.y, 30
+      );
+      headGlow.addColorStop(0, 'rgba(255, 113, 206, 0.45)');
+      headGlow.addColorStop(0.5, 'rgba(1, 205, 254, 0.2)');
+      headGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      
+      ctx.beginPath();
+      ctx.arc(mouse.current.x, mouse.current.y, 30, 0, Math.PI * 2);
+      ctx.fillStyle = headGlow;
+      ctx.fill();
+
+      requestAnimationFrame(animate);
     };
 
     window.addEventListener('resize', resize);
     window.addEventListener('mousemove', handleMouseMove);
     resize();
-    initPoints();
     animate();
 
     return () => {
@@ -777,51 +787,38 @@ const ConstellationCursor = () => {
 
 const CustomLogo = () => (
   <motion.div 
-    whileHover={{ scale: 1.1 }}
-    className="relative flex items-center justify-center group"
+    whileHover={{ scale: 1.05 }}
+    className="relative flex items-center justify-center group cursor-pointer"
   >
-    <div className="relative w-16 h-16 flex items-center justify-center">
-      {/* Black Circle Background */}
-      <div className="absolute inset-0 bg-black rounded-full border border-[#ffffff11] shadow-[0_0_15px_rgba(255,113,206,0.2)]" />
+    {/* Outer glow ring */}
+    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#ff71ce]/20 to-[#01cdfe]/20 blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+    
+    <div className="relative w-11 h-11 flex items-center justify-center">
+      {/* Background circle */}
+      <div className="absolute inset-0 bg-[#0d0d0f] rounded-full border border-white/10 shadow-[0_0_24px_rgba(255,113,206,0.18)] group-hover:border-[#ff71ce]/40 transition-colors duration-300" />
       
-      <div className="relative z-10 flex items-center justify-center gap-0.5 px-2">
-        <span className="text-[#01cdfe] font-mono text-lg font-bold">&lt;</span>
-        <svg viewBox="0 0 100 100" className="w-6 h-6">
-          {/* Heart Constellation - More elegant symmetric shape */}
-          <motion.path
-            d="M50,85 L48,83 C20,60 5,45 5,28 C5,15 15,5 28,5 C35,5 42,8 47,14 L50,17 L53,14 C58,8 65,5 72,5 C85,5 95,15 95,28 C95,45 80,60 52,83 L50,85 Z"
-            fill="none"
-            stroke="#ff71ce"
-            strokeWidth="3"
-            strokeLinecap="round"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
-            transition={{ duration: 3, repeat: Infinity }}
-          />
-          
-          {/* Stars at key vertices of the heart */}
-          {[
-            { x: 50, y: 85 }, { x: 28, y: 65 }, { x: 10, y: 40 }, 
-            { x: 15, y: 15 }, { x: 28, y: 5 }, { x: 40, y: 10 }, { x: 50, y: 17 },
-            { x: 60, y: 10 }, { x: 72, y: 5 }, { x: 85, y: 15 }, { x: 90, y: 40 },
-            { x: 72, y: 65 }
-          ].map((p, i) => (
-            <motion.circle
-              key={i}
-              cx={p.x}
-              cy={p.y}
-              r="2.5"
-              fill="white"
-              animate={{ opacity: [0.4, 1, 0.4], scale: [1, 1.3, 1] }}
-              transition={{ duration: 2, delay: i * 0.2, repeat: Infinity }}
-            />
-          ))}
-        </svg>
-        <span className="text-[#01cdfe] font-mono text-lg font-bold">/&gt;</span>
-      </div>
-    </div>
-    <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 pointer-events-none">
-      <span className="text-[6px] font-black text-white opacity-0 group-hover:opacity-100 transition-opacity tracking-tighter">SOSUSH...</span>
+      {/* SVG Heart Logo */}
+      <svg viewBox="0 0 36 36" className="relative z-10 w-6 h-6" fill="none">
+        <motion.path
+          d="M18 28 C18 28 6 20 6 12 C6 8.5 8.5 6 12 6 C14.5 6 16.5 7.5 18 9 C19.5 7.5 21.5 6 24 6 C27.5 6 30 8.5 30 12 C30 20 18 28 18 28 Z"
+          fill="none"
+          stroke="#ff71ce"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: 1 }}
+          transition={{ duration: 2, ease: 'easeInOut', repeat: Infinity, repeatType: 'loop', repeatDelay: 1 }}
+        />
+        {/* Cyan dot accent */}
+        <motion.circle
+          cx="18" cy="9"
+          r="1.5"
+          fill="#01cdfe"
+          animate={{ opacity: [0.3, 1, 0.3], scale: [0.8, 1.3, 0.8] }}
+          transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+        />
+      </svg>
     </div>
   </motion.div>
 );
@@ -1080,7 +1077,7 @@ const ResearchCard: React.FC<{
   onKnowMore: () => void;
 }> = ({ title, desc, tags, color, status, keyMetrics, onKnowMore }) => (
   <motion.div
-    whileHover={{ y: -10 }}
+    whileHover={{ y: -8 }}
     className="group relative bg-[#111113] border border-[#ffffff11] hover:border-[#ffffff22] p-8 rounded-[2.5rem] overflow-hidden flex flex-col justify-between cursor-pointer transition-all shadow-xl"
     onClick={onKnowMore}
   >
@@ -1090,14 +1087,14 @@ const ResearchCard: React.FC<{
     />
     
     <div>
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-start mb-6 gap-3">
         <span 
-          className="text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full bg-black/40 border font-mono"
+          className="text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full bg-black/40 border font-mono shrink-0"
           style={{ borderColor: color + "44", color: color }}
         >
           {status}
         </span>
-        <div className="w-10 h-10 rounded-xl overflow-hidden border border-[#ffffff05] bg-black/40 group-hover:scale-105 transition-transform">
+        <div className="w-10 h-10 rounded-xl overflow-hidden border border-[#ffffff05] bg-black/40 group-hover:scale-105 transition-transform shrink-0">
           <ProjectVisual type={title} color={color} />
         </div>
       </div>
@@ -1118,7 +1115,7 @@ const ResearchCard: React.FC<{
 
       <div className="flex flex-wrap gap-1.5 mb-8">
         {tags.map(tag => (
-          <span key={tag} className="text-[9px] uppercase tracking-widest font-bold px-2.5 py-1 rounded-full bg-[#ffffff03] border border-[#ffffff0a] text-gray-400">
+          <span key={tag} className="text-[9px] uppercase tracking-widest font-bold px-2 py-1 rounded-full bg-[#ffffff03] border border-[#ffffff0a] text-gray-400 leading-none">
             {tag}
           </span>
         ))}
@@ -1206,7 +1203,7 @@ const ResearchSection = ({ onKnowMore }: { onKnowMore: (r: any) => void }) => {
         </h2>
         <p className="text-gray-500 mt-4">Diving deep into self-supervised defense, causal reasoning, and mechanistic interpretability.</p>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
         {researches.map((r, i) => (
           <ResearchCard 
             key={i}
@@ -1346,9 +1343,354 @@ const JourneySection = () => {
   );
 };
 
+const SocialFeedSection: React.FC = () => {
+  return (
+    <section id="social" className="py-16 px-6 md:px-24 lg:px-32 max-w-screen-2xl mx-auto w-full">
+      <div className="mb-12">
+        <p className="text-[#01cdfe] text-xs font-semibold uppercase tracking-[0.3em] mb-4">Around the web</p>
+        <h2 className="text-3xl md:text-4xl font-black font-display tracking-tight text-white">
+          Latest <span className="text-[#ff71ce]">Thoughts</span>
+        </h2>
+        <p className="text-gray-500 mt-3 text-base">What I'm thinking about across the internet.</p>
+      </div>
+
+      <div className="grid md:grid-cols-3 gap-6">
+
+        {/* ── Twitter / X ── */}
+        <motion.a
+          href="https://x.com/sb_19_73"
+          target="_blank" rel="noopener noreferrer"
+          whileHover={{ y: -6, scale: 1.01 }}
+          transition={{ duration: 0.2 }}
+          className="group relative bg-white/[0.03] backdrop-blur-sm border border-white/[0.08] hover:border-white/[0.2] p-6 rounded-2xl overflow-hidden flex flex-col gap-4 transition-all"
+        >
+          <div className="absolute -top-8 -right-8 w-36 h-36 bg-white/5 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-full bg-black flex items-center justify-center border border-white/10 shrink-0">
+                <TwitterXIcon size={16} className="text-white" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-white leading-none mb-0.5">@sb_19_73</p>
+                <p className="text-[10px] text-gray-500">X (Twitter)</p>
+              </div>
+            </div>
+            <TwitterXIcon size={14} className="text-gray-600 group-hover:text-white transition-colors" />
+          </div>
+          <div className="flex-1">
+            <p className="text-gray-400 text-sm leading-relaxed">
+              Thoughts on ML security, mechanistic interpretability, and building things that actually work.
+            </p>
+          </div>
+          <span className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 group-hover:text-white transition-colors">
+            View on X <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
+          </span>
+        </motion.a>
+
+        {/* ── Bluesky ── */}
+        <motion.a
+          href="https://bsky.app/profile/sosush.bsky.social"
+          target="_blank" rel="noopener noreferrer"
+          whileHover={{ y: -6, scale: 1.01 }}
+          transition={{ duration: 0.2 }}
+          className="group relative bg-white/[0.03] backdrop-blur-sm border border-white/[0.08] hover:border-[#0085ff]/40 p-6 rounded-2xl overflow-hidden flex flex-col gap-4 transition-all"
+        >
+          <div className="absolute -top-8 -right-8 w-36 h-36 bg-[#0085ff]/10 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-full bg-[#0085ff]/15 flex items-center justify-center border border-[#0085ff]/20 shrink-0">
+                <BlueskyIcon size={16} className="text-[#0085ff]" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-white leading-none mb-0.5">Sohini Banerjee</p>
+                <p className="text-[10px] text-[#0085ff]/70">@sosush.bsky.social</p>
+              </div>
+            </div>
+            <BlueskyIcon size={14} className="text-gray-600 group-hover:text-[#0085ff] transition-colors shrink-0" />
+          </div>
+          <div className="flex-1">
+            <p className="text-gray-400 text-sm leading-relaxed">
+              Longer takes on AI research, open-source projects, and what I'm currently reading and building.
+            </p>
+          </div>
+          <span className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 group-hover:text-[#0085ff] transition-colors">
+            View on Bluesky <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
+          </span>
+        </motion.a>
+
+        {/* ── LinkedIn ── */}
+        <motion.a
+          href="https://www.linkedin.com/in/sosush/"
+          target="_blank" rel="noopener noreferrer"
+          whileHover={{ y: -6, scale: 1.01 }}
+          transition={{ duration: 0.2 }}
+          className="group relative bg-white/[0.03] backdrop-blur-sm border border-white/[0.08] hover:border-[#0a66c2]/40 p-6 rounded-2xl overflow-hidden flex flex-col gap-4 transition-all"
+        >
+          <div className="absolute -top-8 -right-8 w-36 h-36 bg-[#0a66c2]/10 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-full bg-[#0a66c2]/15 flex items-center justify-center border border-[#0a66c2]/25 shrink-0">
+                <LinkedinIcon size={16} className="text-[#0a66c2]" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-white leading-none mb-0.5">Sohini Banerjee</p>
+                <p className="text-[10px] text-[#0a66c2]/70">linkedin.com/in/sosush</p>
+              </div>
+            </div>
+            <LinkedinIcon size={14} className="text-gray-600 group-hover:text-[#0a66c2] transition-colors shrink-0" />
+          </div>
+          <div className="flex-1">
+            <p className="text-gray-400 text-sm leading-relaxed">
+              Research updates, project milestones, and professional reflections on AI/ML and cybersecurity.
+            </p>
+          </div>
+          <span className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 group-hover:text-[#0a66c2] transition-colors">
+            View on LinkedIn <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
+          </span>
+        </motion.a>
+
+      </div>
+    </section>
+  );
+};
+
+// ── Project Deepdive Section ──────────────────────────────────────────────────
+interface BlogPost {
+  id: number;
+  title: string;
+  preview: string;
+  content: string;
+  date: string;
+  readTime: string;
+  color: string;
+}
+
+const dummyBlogs: BlogPost[] = [
+  {
+    id: 1,
+    title: "Mechanistic Interpretability of Transformers",
+    preview: "Diving into the circuit architectures inside language models to map logic flow to activations.",
+    content: "Mechanistic interpretability aims to reverse engineer neural networks, moving from high-level outputs to fine-grained circuits of activations. We inspect attention patterns, linear layers, and write-path projections to reveal how logic maps directly to vectors in activation spaces.",
+    date: "July 08, 2026",
+    readTime: "6 min read",
+    color: "#ff71ce"
+  },
+  {
+    id: 2,
+    title: "Adversarial Robustness in Network Defenses",
+    preview: "Developing filter protocols that protect security systems from payload poison attacks.",
+    content: "Traditional security filters are static and vulnerable to adversarial attack patterns designed to slide past detection algorithms. By studying input space perturbation boundaries and feature drift, we map out strategies for dynamic packet sanitization without modifying underlying classification layers.",
+    date: "June 24, 2026",
+    readTime: "8 min read",
+    color: "#01cdfe"
+  },
+  {
+    id: 3,
+    title: "Causal Inference in Complex Protocol Anomalies",
+    preview: "Moving beyond predictive correlation to discover causal signals in network violations.",
+    content: "Most modern security classifiers rely on superficial feature correlation, leading to massive false alarm rates. By applying causal graphing and structural equation modeling, we isolate robust protocol invariants that represent structural spec violations.",
+    date: "June 10, 2026",
+    readTime: "5 min read",
+    color: "#fffb96"
+  },
+  {
+    id: 4,
+    title: "Zero Knowledge Proofs for Privacy Verification",
+    preview: "Implementing zero-knowledge biometrics that allow proof of humanness without sharing raw data.",
+    content: "Deepfake verification demands real-time checks, but storing biometric patterns is a massive privacy risk. In this post, we discuss setting up zk-SNARK circuits to verify corneal light-reflection signatures and heartbeat offsets offline, leaving private details safely encrypted on the user device.",
+    date: "May 29, 2026",
+    readTime: "7 min read",
+    color: "#05ffa1"
+  },
+  {
+    id: 5,
+    title: "Evolutionary Code Mutation with Groq LLM Guides",
+    preview: "Using feedback loops and genetic algorithms to mutate pure code structures.",
+    content: "Combining genetic programming with LLM mutations creates an automated loop that designs algorithmic answers. By leveraging extremely high-throughput APIs (like Groq) as mutation selectors, populations of functional algorithms evolve to meet complex specs without human code inputs.",
+    date: "May 15, 2026",
+    readTime: "9 min read",
+    color: "#a100ff"
+  }
+];
+
+const ProjectDeepdiveSection: React.FC<{ onRead: (blog: BlogPost) => void }> = ({ onRead }) => {
+  const [activeIndex, setActiveIndex] = useState(2);
+
+  const rotateCarousel = (direction: 'next' | 'prev') => {
+    if (direction === 'next') {
+      setActiveIndex((prev) => (prev + 1) % dummyBlogs.length);
+    } else {
+      setActiveIndex((prev) => (prev - 1 + dummyBlogs.length) % dummyBlogs.length);
+    }
+  };
+
+  return (
+    <Section id="deepdive" className="relative overflow-hidden">
+      <div className="mb-16">
+        <p className="text-[#05ffa1] text-xs font-semibold uppercase tracking-[0.3em] mb-4">Deepdives</p>
+        <h2 className="text-3xl md:text-5xl font-black font-display tracking-tight text-white uppercase">
+          Project <span className="text-[#01cdfe]">Deepdive</span>
+        </h2>
+        <p className="text-gray-500 mt-4 text-base">In-depth technical writeups and case studies on engineering and security research.</p>
+      </div>
+
+      {/* Revolving Carousel Area */}
+      <div className="relative h-[480px] w-full flex items-center justify-center overflow-hidden">
+        <div className="relative w-full max-w-4xl h-full flex items-center justify-center">
+          {dummyBlogs.map((blog, idx) => {
+            let offset = idx - activeIndex;
+            if (offset < -2) offset += dummyBlogs.length;
+            if (offset > 2) offset -= dummyBlogs.length;
+
+            const isActive = offset === 0;
+            const isVisible = Math.abs(offset) <= 2;
+
+            if (!isVisible) return null;
+
+            const rotateY = offset * 32;
+            const translateZ = isActive ? 0 : -220;
+            const translateX = offset * 280;
+            const scale = isActive ? 1.05 : 0.85;
+            const opacity = isActive ? 1 : 0.4;
+            const zIndex = 10 - Math.abs(offset);
+
+            return (
+              <motion.div
+                key={blog.id}
+                animate={{
+                  x: translateX,
+                  scale: scale,
+                  opacity: opacity,
+                  z: translateZ,
+                  rotateY: rotateY,
+                }}
+                transition={{ type: "spring", stiffness: 260, damping: 26 }}
+                style={{
+                  position: 'absolute',
+                  zIndex: zIndex,
+                  transformStyle: 'preserve-3d',
+                }}
+                className={`w-[320px] md:w-[380px] h-[360px] bg-[#111113]/90 backdrop-blur-md border border-white/[0.08] p-8 rounded-3xl flex flex-col justify-between cursor-pointer transition-all ${
+                  isActive ? 'border-[#01cdfe]/40 shadow-[0_8px_32px_rgba(1,205,254,0.1)]' : 'hover:border-white/20'
+                }`}
+                onClick={() => {
+                  if (isActive) {
+                    onRead(blog);
+                  } else {
+                    setActiveIndex(idx);
+                  }
+                }}
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-6">
+                    <span className="text-[10px] font-bold text-gray-500 font-mono">{blog.date}</span>
+                    <span className="text-[10px] text-gray-500 px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10">{blog.readTime}</span>
+                  </div>
+                  <h3 className="text-xl md:text-2xl font-black mb-4 tracking-tight leading-tight text-white" style={{ color: isActive ? blog.color : '#fff' }}>
+                    {blog.title}
+                  </h3>
+                  <p className="text-gray-400 text-sm leading-relaxed line-clamp-4">
+                    {blog.preview}
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-between pt-4 border-t border-white/[0.06]">
+                  <span className="text-[10px] uppercase font-bold tracking-widest text-[#01cdfe]">Technical Post</span>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onRead(blog);
+                    }}
+                    className="flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-xl bg-white text-black hover:bg-white/90 transition-colors"
+                  >
+                    Read Post <ArrowRight size={13} />
+                  </button>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        {/* Carousel controls */}
+        <div className="absolute bottom-2 flex gap-4 z-20">
+          <button
+            onClick={() => rotateCarousel('prev')}
+            className="w-11 h-11 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-white/10 hover:border-white/20 active:scale-95 transition-all"
+            aria-label="Previous Post"
+          >
+            ←
+          </button>
+          <button
+            onClick={() => rotateCarousel('next')}
+            className="w-11 h-11 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-white/10 hover:border-white/20 active:scale-95 transition-all"
+            aria-label="Next Post"
+          >
+            →
+          </button>
+        </div>
+      </div>
+    </Section>
+  );
+};
+
 export default function App() {
   const [isBgMoving, setIsBgMoving] = useState(true);
   const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [selectedBlog, setSelectedBlog] = useState<BlogPost | null>(null);
+
+  useEffect(() => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 32;
+    canvas.height = 32;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let link: HTMLLinkElement | null = document.querySelector("link[rel*='icon']");
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'icon';
+      document.head.appendChild(link);
+    }
+
+    let frame = 0;
+    const draw = () => {
+      ctx.clearRect(0, 0, 32, 32);
+
+      ctx.fillStyle = '#0d0d0f';
+      ctx.beginPath();
+      ctx.arc(16, 16, 15, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      ctx.beginPath();
+      for (let t = 0; t <= Math.PI * 2; t += 0.05) {
+        const x = 16 + 8 * Math.pow(Math.sin(t), 3);
+        const y = 15 - (7 * Math.cos(t) - 2.8 * Math.cos(2*t) - 1.2 * Math.cos(3*t) - 0.4 * Math.cos(4*t));
+        if (t === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+
+      ctx.strokeStyle = '#ff71ce';
+      ctx.lineWidth = 1.6;
+      ctx.stroke();
+
+      const pulse = Math.abs(Math.sin(frame * 0.06));
+      ctx.fillStyle = '#01cdfe';
+      ctx.beginPath();
+      ctx.arc(16, 10, 1 + pulse * 1.3, 0, Math.PI * 2);
+      ctx.fill();
+
+      link!.href = canvas.toDataURL('image/png');
+      frame++;
+      requestAnimationFrame(draw);
+    };
+
+    const animId = requestAnimationFrame(draw);
+    return () => cancelAnimationFrame(animId);
+  }, []);
   const { scrollYProgress } = useScroll();
   const heroOpacity = useTransform(scrollYProgress, [0, 0.1], [1, 0]);
   const heroY = useTransform(scrollYProgress, [0, 0.1], [0, -50]);
@@ -1457,28 +1799,67 @@ export default function App() {
           Click to {isBgMoving ? 'disable' : 'enable'} background response to cursor
         </div>
       </div>
-      
+
       <AnimatePresence>
         {selectedProject && (
           <ProjectDetail project={selectedProject} onClose={() => setSelectedProject(null)} />
+        )}
+        {selectedBlog && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-8"
+            onClick={() => setSelectedBlog(null)}
+          >
+            <div className="absolute inset-0 bg-black/85 backdrop-blur-md" />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-2xl bg-[#0e0e10] border border-white/10 rounded-3xl p-8 md:p-10 shadow-2xl overflow-y-auto max-h-[85vh]"
+              onClick={e => e.stopPropagation()}
+            >
+              <button 
+                onClick={() => setSelectedBlog(null)}
+                className="absolute top-5 right-5 p-2 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-all text-white"
+              >
+                <X size={16} />
+              </button>
+              <div className="mb-6">
+                <div className="flex gap-3 items-center text-[10px] uppercase font-bold tracking-widest text-gray-500 font-mono">
+                  <span>{selectedBlog.date}</span>
+                  <span>·</span>
+                  <span>{selectedBlog.readTime}</span>
+                </div>
+                <h2 className="text-2xl md:text-3xl font-black mt-2 leading-tight" style={{ color: selectedBlog.color }}>{selectedBlog.title}</h2>
+              </div>
+              <p className="text-gray-300 text-base leading-relaxed whitespace-pre-line">{selectedBlog.content}</p>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
 
       {/* Navigation */}
       <nav className="fixed top-0 left-0 w-full z-50">
         <div className="mx-auto max-w-screen-xl px-6 md:px-10">
-          <div className="flex justify-between items-center py-4 mt-3 bg-white/[0.04] backdrop-blur-md border border-white/[0.08] rounded-2xl px-6">
-            <motion.div 
+          <div className="flex justify-between items-center py-3.5 mt-3 bg-black/55 backdrop-blur-xl border border-white/[0.08] rounded-2xl px-6 shadow-[0_4px_32px_rgba(0,0,0,0.5)]">
+            <motion.a
+              href="#"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="flex items-center gap-3"
+              className="flex items-center gap-3 group"
             >
               <CustomLogo />
-              <span className="text-sm font-bold tracking-tight text-white/80">sosush.</span>
-            </motion.div>
-            <div className="hidden md:flex gap-6 text-[11px] font-medium text-gray-400">
-              {['About', 'Journey', 'Work', 'Research', 'Skills', 'Contact'].map((item) => (
-                <a key={item} href={`#${item.toLowerCase()}`} className="hover:text-white transition-colors duration-200">
+              <span className="text-[15px] font-bold tracking-tight text-white/75 group-hover:text-white transition-colors">sosush.</span>
+            </motion.a>
+            <div className="hidden md:flex items-center gap-0.5">
+              {['About', 'Journey', 'Work', 'Research', 'Deepdive', 'Social', 'Skills', 'Contact'].map((item) => (
+                <a
+                  key={item}
+                  href={`#${item.toLowerCase()}`}
+                  className="px-3.5 py-2 text-[12px] font-medium text-gray-400 hover:text-white rounded-lg hover:bg-white/[0.07] transition-all duration-200"
+                >
                   {item}
                 </a>
               ))}
@@ -1606,7 +1987,7 @@ export default function App() {
           </h2>
           <p className="text-gray-500 mt-3 text-base">A selection of personal and team projects across ML, security, and systems engineering.</p>
         </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
           {projects.map((p, i) => (
             <ProjectCard 
               key={i}
@@ -1624,8 +2005,14 @@ export default function App() {
       {/* Research Section */}
       <ResearchSection onKnowMore={(r) => setSelectedProject(r)} />
 
+      {/* Project Deepdive Section */}
+      <ProjectDeepdiveSection onRead={(blog) => setSelectedBlog(blog)} />
+
+      {/* Social Media Feed Section */}
+      <SocialFeedSection />
+
       {/* Certificates Section */}
-      <section id="certificates" className="py-16 px-6 md:px-24 lg:px-32 max-w-screen-xl mx-auto w-full">
+      <section id="certificates" className="py-16 px-6 md:px-24 lg:px-32 max-w-screen-2xl mx-auto w-full">
         <div className="max-w-2xl">
           <p className="text-[#b967ff] text-xs font-semibold uppercase tracking-[0.3em] mb-4">Recognition</p>
           <h2 className="text-3xl font-black font-display tracking-tight text-white mb-8">
@@ -1662,7 +2049,7 @@ export default function App() {
       </section>
 
       {/* Skills Section */}
-      <section id="skills" className="py-16 px-6 md:px-24 lg:px-32 max-w-screen-xl mx-auto w-full">
+      <section id="skills" className="py-16 px-6 md:px-24 lg:px-32 max-w-screen-2xl mx-auto w-full">
         <p className="text-[#fffb96] text-xs font-semibold uppercase tracking-[0.3em] mb-4">Skills</p>
         <h2 className="text-3xl font-black font-display tracking-tight text-white mb-10">What I work with</h2>
         <div className="grid md:grid-cols-2 gap-10">
@@ -1698,11 +2085,11 @@ export default function App() {
           <div className="absolute bottom-10 right-1/4 w-64 h-64 bg-[#01cdfe] opacity-[0.04] blur-[100px] rounded-full" />
         </div>
         
-        <div className="max-w-screen-xl mx-auto relative z-10">
+        <div className="max-w-screen-2xl mx-auto relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            className="max-w-lg"
+            className="text-center max-w-2xl mx-auto"
           >
             <p className="text-[#ff71ce] text-xs font-semibold uppercase tracking-[0.3em] mb-6">Get in touch</p>
             <h2 className="text-4xl md:text-5xl font-black font-display tracking-tight mb-5 text-white">
@@ -1711,25 +2098,27 @@ export default function App() {
             <p className="text-gray-500 text-base leading-relaxed mb-3">
               Open to research collaborations, interesting problems, and good conversations about AI and security.
             </p>
-            <p className="text-gray-600 text-sm font-mono mb-8">
-              son20apakhi05@gmail.com · (+91) 98740-38011
+            <p className="text-gray-600 text-sm font-mono mb-10">
+              sohinibanerjee1315@gmail.com · (+91) 98740-38011
             </p>
+
+            <div className="flex flex-wrap gap-4 items-center justify-center">
+              <motion.a
+                href="mailto:sohinibanerjee1315@gmail.com"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                className="flex items-center gap-2.5 px-6 py-3 bg-[#ff71ce] text-black text-sm font-bold rounded-xl shadow-[0_0_25px_rgba(255,113,206,0.3)] hover:shadow-[0_0_40px_rgba(255,113,206,0.45)] transition-shadow"
+              >
+                <Mail size={16} /> Say hello
+              </motion.a>
+              <a href="https://github.com/sosush" title="GitHub" className="p-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-gray-400 hover:text-white hover:border-white/20 transition-all"><GithubIcon size={18} /></a>
+              <a href="https://linkedin.com/in/sosush" title="LinkedIn" className="p-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-gray-400 hover:text-[#0a66c2] hover:border-[#0a66c2]/30 transition-all"><LinkedinIcon size={18} /></a>
+              <a href="https://x.com/sb_19_73" title="X (Twitter)" className="p-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-gray-400 hover:text-white hover:border-white/20 transition-all"><TwitterXIcon size={18} /></a>
+              <a href="https://bsky.app/profile/sosush.bsky.social" title="Bluesky" className="p-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-gray-400 hover:text-[#0085ff] hover:border-[#0085ff]/30 transition-all"><BlueskyIcon size={18} /></a>
+            </div>
           </motion.div>
 
-          <div className="flex flex-wrap gap-4 items-center">
-            <motion.a
-              href="mailto:son20apakhi05@gmail.com"
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              className="flex items-center gap-2.5 px-6 py-3 bg-[#ff71ce] text-black text-sm font-bold rounded-xl shadow-[0_0_25px_rgba(255,113,206,0.3)] hover:shadow-[0_0_40px_rgba(255,113,206,0.45)] transition-shadow"
-            >
-              <Mail size={16} /> Say hello
-            </motion.a>
-            <a href="https://github.com/sosush" className="p-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-gray-400 hover:text-white hover:border-white/20 transition-all"><GithubIcon size={18} /></a>
-            <a href="https://linkedin.com/in/sosush" className="p-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-gray-400 hover:text-white hover:border-white/20 transition-all"><LinkedinIcon size={18} /></a>
-          </div>
-
-          <p className="text-gray-700 text-xs mt-16">© 2025 Sohini Banerjee. Built with React + Three.js.</p>
+          <p className="text-gray-700 text-xs mt-16 text-center">© 2025 Sohini Banerjee. Built with React + Three.js.</p>
         </div>
       </footer>
     </div>
