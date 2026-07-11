@@ -1,5 +1,7 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
+import { blogPosts, type BlogPost } from './lib/posts';
+import { MarkdownContent } from './components/MarkdownContent';
 import { 
   Mail, 
   ExternalLink, 
@@ -1455,74 +1457,31 @@ const SocialFeedSection: React.FC = () => {
 };
 
 // ── Project Deepdive Section ──────────────────────────────────────────────────
-interface BlogPost {
-  id: number;
-  title: string;
-  preview: string;
-  content: string;
-  date: string;
-  readTime: string;
-  color: string;
-}
-
-const dummyBlogs: BlogPost[] = [
-  {
-    id: 1,
-    title: "Mechanistic Interpretability of Transformers",
-    preview: "Diving into the circuit architectures inside language models to map logic flow to activations.",
-    content: "Mechanistic interpretability aims to reverse engineer neural networks, moving from high-level outputs to fine-grained circuits of activations. We inspect attention patterns, linear layers, and write-path projections to reveal how logic maps directly to vectors in activation spaces.",
-    date: "July 08, 2026",
-    readTime: "6 min read",
-    color: "#ff71ce"
-  },
-  {
-    id: 2,
-    title: "Adversarial Robustness in Network Defenses",
-    preview: "Developing filter protocols that protect security systems from payload poison attacks.",
-    content: "Traditional security filters are static and vulnerable to adversarial attack patterns designed to slide past detection algorithms. By studying input space perturbation boundaries and feature drift, we map out strategies for dynamic packet sanitization without modifying underlying classification layers.",
-    date: "June 24, 2026",
-    readTime: "8 min read",
-    color: "#01cdfe"
-  },
-  {
-    id: 3,
-    title: "Causal Inference in Complex Protocol Anomalies",
-    preview: "Moving beyond predictive correlation to discover causal signals in network violations.",
-    content: "Most modern security classifiers rely on superficial feature correlation, leading to massive false alarm rates. By applying causal graphing and structural equation modeling, we isolate robust protocol invariants that represent structural spec violations.",
-    date: "June 10, 2026",
-    readTime: "5 min read",
-    color: "#fffb96"
-  },
-  {
-    id: 4,
-    title: "Zero Knowledge Proofs for Privacy Verification",
-    preview: "Implementing zero-knowledge biometrics that allow proof of humanness without sharing raw data.",
-    content: "Deepfake verification demands real-time checks, but storing biometric patterns is a massive privacy risk. In this post, we discuss setting up zk-SNARK circuits to verify corneal light-reflection signatures and heartbeat offsets offline, leaving private details safely encrypted on the user device.",
-    date: "May 29, 2026",
-    readTime: "7 min read",
-    color: "#05ffa1"
-  },
-  {
-    id: 5,
-    title: "Evolutionary Code Mutation with Groq LLM Guides",
-    preview: "Using feedback loops and genetic algorithms to mutate pure code structures.",
-    content: "Combining genetic programming with LLM mutations creates an automated loop that designs algorithmic answers. By leveraging extremely high-throughput APIs (like Groq) as mutation selectors, populations of functional algorithms evolve to meet complex specs without human code inputs.",
-    date: "May 15, 2026",
-    readTime: "9 min read",
-    color: "#a100ff"
-  }
-];
+const CAROUSEL_AUTO_ROTATE_MS = 4500;
 
 const ProjectDeepdiveSection: React.FC<{ onRead: (blog: BlogPost) => void }> = ({ onRead }) => {
-  const [activeIndex, setActiveIndex] = useState(2);
+  const [activeIndex, setActiveIndex] = useState(() =>
+    Math.min(2, Math.max(0, blogPosts.length - 1))
+  );
+  const [isHovered, setIsHovered] = useState(false);
 
-  const rotateCarousel = (direction: 'next' | 'prev') => {
+  const rotateCarousel = useCallback((direction: 'next' | 'prev') => {
     if (direction === 'next') {
-      setActiveIndex((prev) => (prev + 1) % dummyBlogs.length);
+      setActiveIndex((prev) => (prev + 1) % blogPosts.length);
     } else {
-      setActiveIndex((prev) => (prev - 1 + dummyBlogs.length) % dummyBlogs.length);
+      setActiveIndex((prev) => (prev - 1 + blogPosts.length) % blogPosts.length);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (isHovered || blogPosts.length <= 1) return;
+
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % blogPosts.length);
+    }, CAROUSEL_AUTO_ROTATE_MS);
+
+    return () => clearInterval(interval);
+  }, [isHovered]);
 
   return (
     <Section id="deepdive" className="relative overflow-hidden">
@@ -1535,12 +1494,16 @@ const ProjectDeepdiveSection: React.FC<{ onRead: (blog: BlogPost) => void }> = (
       </div>
 
       {/* Revolving Carousel Area */}
-      <div className="relative h-[480px] w-full flex items-center justify-center overflow-hidden">
+      <div
+        className="relative h-[480px] w-full flex items-center justify-center overflow-hidden"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
         <div className="relative w-full max-w-4xl h-full flex items-center justify-center">
-          {dummyBlogs.map((blog, idx) => {
+          {blogPosts.map((blog, idx) => {
             let offset = idx - activeIndex;
-            if (offset < -2) offset += dummyBlogs.length;
-            if (offset > 2) offset -= dummyBlogs.length;
+            if (offset < -2) offset += blogPosts.length;
+            if (offset > 2) offset -= blogPosts.length;
 
             const isActive = offset === 0;
             const isVisible = Math.abs(offset) <= 2;
@@ -1556,7 +1519,7 @@ const ProjectDeepdiveSection: React.FC<{ onRead: (blog: BlogPost) => void }> = (
 
             return (
               <motion.div
-                key={blog.id}
+                key={blog.slug}
                 animate={{
                   x: translateX,
                   scale: scale,
@@ -1834,7 +1797,7 @@ export default function App() {
                 </div>
                 <h2 className="text-2xl md:text-3xl font-black mt-2 leading-tight" style={{ color: selectedBlog.color }}>{selectedBlog.title}</h2>
               </div>
-              <p className="text-gray-300 text-base leading-relaxed whitespace-pre-line">{selectedBlog.content}</p>
+              <MarkdownContent content={selectedBlog.content} />
             </motion.div>
           </motion.div>
         )}
