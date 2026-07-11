@@ -1601,7 +1601,7 @@ const ProjectDeepdiveSection: React.FC<{ onRead: (blog: BlogPost) => void }> = (
         <h2 className="text-3xl md:text-5xl font-black font-display tracking-tight text-white uppercase">
           Project <span className="text-[#01cdfe]">Deepdive</span>
         </h2>
-        <p className="text-gray-500 mt-4 text-base">A continuous stream of technical writeups, moving like a film strip across the page.</p>
+        <p className="text-gray-500 mt-4 text-base">A comprehensive look into the inspiration and creation of my projects.</p>
       </div>
 
       <div
@@ -1620,7 +1620,7 @@ const ProjectDeepdiveSection: React.FC<{ onRead: (blog: BlogPost) => void }> = (
           {stripPosts.map((blog, idx) => (
             <div
               key={`${blog.slug}-${idx}`}
-              className="group h-[280px] md:h-[320px] w-[280px] md:w-[320px] shrink-0 rounded-[28px] border border-white/10 bg-[#111113]/90 p-6 md:p-7 shadow-[0_18px_60px_rgba(0,0,0,0.35)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-[#01cdfe]/30 hover:shadow-[0_24px_90px_rgba(1,205,254,0.16)]"
+              className="group h-[340px] md:h-[380px] w-[280px] md:w-[320px] shrink-0 rounded-[28px] border border-white/10 bg-[#111113]/90 p-6 md:p-7 shadow-[0_18px_60px_rgba(0,0,0,0.35)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-[#01cdfe]/30 hover:shadow-[0_24px_90px_rgba(1,205,254,0.16)]"
               onClick={() => onRead(blog)}
             >
               <div className="flex items-center justify-between mb-5">
@@ -1640,7 +1640,7 @@ const ProjectDeepdiveSection: React.FC<{ onRead: (blog: BlogPost) => void }> = (
               </p>
 
               <div className="mt-6 flex items-center justify-between border-t border-white/10 pt-4">
-                <span className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#05ffa1]">Film Strip</span>
+                <span className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#05ffa1]">Project</span>
                 <span className="flex items-center gap-1.5 text-xs font-semibold text-white transition-colors group-hover:text-[#01cdfe]">
                   Read <ArrowRight size={13} />
                 </span>
@@ -1916,7 +1916,7 @@ export default function App() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="text-2xl md:text-3xl font-black mb-8 font-display"
           >
-            I build{' '}<TypingText texts={['intelligence.', 'robust systems.', 'security tools.', 'with purpose.']} />
+            I build{' '}<TypingText texts={['Intelligence.', 'Robust Systems.', 'Secure Applications.', 'My Imagination.']} />
           </motion.div>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -1924,7 +1924,7 @@ export default function App() {
             transition={{ duration: 0.8, delay: 0.3 }}
             className="text-base md:text-lg text-gray-500 max-w-xl mx-auto mb-10 leading-relaxed"
           >
-            CS undergrad who likes breaking things to understand how to protect them. I build systems that don't fall apart when things go wrong.
+            Does coffee and late nights make me a hard working human? Or just a bunch of neural networks trying to learn too much data too fast?
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
