@@ -121,12 +121,36 @@ const TypingText: React.FC<{ texts: string[] }> = ({ texts }) => {
   );
 };
 
+const ScrollReveal: React.FC<{
+  children: React.ReactNode;
+  className?: string;
+  direction?: 'up' | 'down' | 'left' | 'right';
+  delay?: number;
+  duration?: number;
+  amount?: number;
+}> = ({ children, className = "", direction = 'up', delay = 0, duration = 0.8, amount = 0.2 }) => {
+  const initialX = direction === 'left' ? 48 : direction === 'right' ? -48 : 0;
+  const initialY = direction === 'up' ? 48 : direction === 'down' ? -48 : 0;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: initialX, y: initialY, scale: 0.98 }}
+      whileInView={{ opacity: 1, x: 0, y: 0, scale: 1 }}
+      viewport={{ once: false, amount }}
+      transition={{ duration, ease: [0.22, 1, 0.36, 1], delay }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+};
+
 const Section: React.FC<{ children: React.ReactNode; id?: string; className?: string }> = ({ children, id, className = "" }) => (
   <motion.section
     id={id}
-    initial={{ opacity: 0, y: 60 }}
+    initial={{ opacity: 0, y: 70 }}
     whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, margin: "-80px" }}
+    viewport={{ once: false, amount: 0.2, margin: "-80px" }}
     transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
     className={`min-h-screen flex flex-col justify-center py-24 px-6 md:px-24 lg:px-32 max-w-screen-2xl mx-auto w-full ${className}`}
   >
@@ -1167,10 +1191,15 @@ const ResearchCard: React.FC<{
   color: string;
   status: string;
   keyMetrics: { label: string; value: string }[];
+  index?: number;
   onKnowMore: () => void;
-}> = ({ title, desc, tags, color, status, keyMetrics, onKnowMore }) => (
+}> = ({ title, desc, tags, color, status, keyMetrics, index = 0, onKnowMore }) => (
   <motion.div
-    whileHover={{ y: -8 }}
+    initial={{ opacity: 0, y: 56, scale: 0.94 }}
+    whileInView={{ opacity: 1, y: 0, scale: 1 }}
+    viewport={{ once: false, amount: 0.2 }}
+    transition={{ duration: 0.7, delay: index * 0.12, ease: [0.22, 1, 0.36, 1] }}
+    whileHover={{ y: -8, scale: 1.01 }}
     className="group relative bg-[#111113] border border-[#ffffff11] hover:border-[#ffffff22] p-8 rounded-[2.5rem] overflow-hidden flex flex-col justify-between cursor-pointer transition-all shadow-xl"
     onClick={onKnowMore}
   >
@@ -1300,6 +1329,7 @@ const ResearchSection = ({ onKnowMore }: { onKnowMore: (r: any) => void }) => {
         {researches.map((r, i) => (
           <ResearchCard 
             key={i}
+            index={i}
             title={r.title} 
             desc={r.desc} 
             tags={r.tags}
@@ -1334,8 +1364,8 @@ const JourneySection: React.FC<{ certifications: Array<{ title: string; issuer: 
         <motion.div 
           initial={{ opacity: 0, x: -50 }}
           whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
+          viewport={{ once: false, amount: 0.25 }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           className="bg-[#151518] border border-[#ffffff11] p-8 md:p-10 rounded-[2.5rem] relative overflow-hidden"
         >
           <div className="absolute top-0 right-0 w-32 h-32 blur-3xl opacity-10 bg-[#01cdfe]" />
@@ -1382,8 +1412,8 @@ const JourneySection: React.FC<{ certifications: Array<{ title: string; issuer: 
         <motion.div 
           initial={{ opacity: 0, x: 50 }}
           whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
+          viewport={{ once: false, amount: 0.25 }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           className="bg-[#151518] border border-[#ffffff11] p-8 md:p-10 rounded-[2.5rem] relative overflow-hidden"
         >
           <div className="absolute top-0 right-0 w-32 h-32 blur-3xl opacity-10 bg-[#ff71ce]" />
@@ -1441,8 +1471,8 @@ const JourneySection: React.FC<{ certifications: Array<{ title: string; issuer: 
         <motion.div
           initial={{ opacity: 0, x: 50 }}
           whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.1 }}
+          viewport={{ once: false, amount: 0.25 }}
+          transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
           className="bg-[#151518] border border-[#ffffff11] p-8 md:p-10 rounded-[2.5rem] relative overflow-hidden"
         >
           <div className="absolute top-0 right-0 w-32 h-32 blur-3xl opacity-10 bg-[#b967ff]" />
@@ -1495,8 +1525,11 @@ const SocialFeedSection: React.FC = () => {
         <motion.a
           href="https://x.com/sb_19_73"
           target="_blank" rel="noopener noreferrer"
-          whileHover={{ y: -6, scale: 1.01 }}
-          transition={{ duration: 0.2 }}
+          initial={{ opacity: 0, y: 48, scale: 0.96 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: false, amount: 0.25 }}
+          whileHover={{ y: -6, scale: 1.01, transition: { duration: 0.2 } }}
+          transition={{ duration: 0.7, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
           className="group relative bg-white/[0.03] backdrop-blur-sm border border-white/[0.08] hover:border-white/[0.2] p-6 rounded-2xl overflow-hidden flex flex-col gap-4 transition-all"
         >
           <div className="absolute -top-8 -right-8 w-36 h-36 bg-white/5 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -1526,8 +1559,11 @@ const SocialFeedSection: React.FC = () => {
         <motion.a
           href="https://bsky.app/profile/sosush.bsky.social"
           target="_blank" rel="noopener noreferrer"
-          whileHover={{ y: -6, scale: 1.01 }}
-          transition={{ duration: 0.2 }}
+          initial={{ opacity: 0, y: 48, scale: 0.96 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: false, amount: 0.25 }}
+          whileHover={{ y: -6, scale: 1.01, transition: { duration: 0.2 } }}
+          transition={{ duration: 0.7, delay: 0.17, ease: [0.22, 1, 0.36, 1] }}
           className="group relative bg-white/[0.03] backdrop-blur-sm border border-white/[0.08] hover:border-[#0085ff]/40 p-6 rounded-2xl overflow-hidden flex flex-col gap-4 transition-all"
         >
           <div className="absolute -top-8 -right-8 w-36 h-36 bg-[#0085ff]/10 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -1557,8 +1593,11 @@ const SocialFeedSection: React.FC = () => {
         <motion.a
           href="https://www.linkedin.com/in/sosush/"
           target="_blank" rel="noopener noreferrer"
-          whileHover={{ y: -6, scale: 1.01 }}
-          transition={{ duration: 0.2 }}
+          initial={{ opacity: 0, y: 48, scale: 0.96 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: false, amount: 0.25 }}
+          whileHover={{ y: -6, scale: 1.01, transition: { duration: 0.2 } }}
+          transition={{ duration: 0.7, delay: 0.29, ease: [0.22, 1, 0.36, 1] }}
           className="group relative bg-white/[0.03] backdrop-blur-sm border border-white/[0.08] hover:border-[#0a66c2]/40 p-6 rounded-2xl overflow-hidden flex flex-col gap-4 transition-all"
         >
           <div className="absolute -top-8 -right-8 w-36 h-36 bg-[#0a66c2]/10 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -2104,7 +2143,7 @@ export default function App() {
             </div>
           </motion.div>
 
-          <p className="text-gray-700 text-xs mt-16 text-center">© 2025 Sohini Banerjee. Built with React + Three.js.</p>
+          <p className="text-gray-700 text-xs mt-16 text-center">© Thank you for viewing my portfolio ❤️ </p>
         </div>
       </footer>
     </div>
