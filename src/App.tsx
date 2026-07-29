@@ -1935,7 +1935,7 @@ export default function App() {
               className="flex items-center gap-3 group"
             >
               <CustomLogo />
-              <span className="text-[15px] font-bold tracking-tight text-white/75 group-hover:text-white transition-colors">sosush.</span>
+              <span className="text-[15px] font-bold tracking-tight text-white/75 group-hover:text-white transition-colors">Sohini Banerjee.</span>
             </motion.a>
             <div className="hidden md:flex items-center gap-0.5">
               {['About', 'Journey', 'Work', 'Research', 'Deepdive', 'Social', 'Skills', 'Contact'].map((item) => (
